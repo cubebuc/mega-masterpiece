@@ -1,30 +1,40 @@
 const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
 const Lobby = require('./models/Lobby.js');
+
+const PORT = process.env.PORT || 5000;
 
 let lobbies = [];
 
 const app = express();
 app.use(express.static(__dirname + '/public'));
 app.use(express.json());
-const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () =>
+const server = http.createServer(app);
+const io = new Server(server);
+//io.emit('key', value);
+
+server.listen(PORT, () =>
 {
     console.log('Listening on port ' + PORT);
 });
 
-app.get('/backend', (req, res) =>
-{
-    res.send({express: 'Express backend is connected to React frontend.'});
-});
-
 app.post('/join', (req, res) =>
 {
-    let player = req.body.player;
+    io.emit('test', 'test');
 
-    let lobby = new Lobby();
+    let player = req.body.player;
+    let id = req.body.id;
+
+    let lobby = lobbies.find(l => l.id == id)
+    if(!lobby)
+    {
+        lobby = new Lobby();
+        lobby.setWords(['Kočka', 'Pes', 'Žirafa', 'Slon', 'Ptakopysk', 'Lemur']);
+    }
+
     lobby.addPlayer(player);
-    lobby.setWords(['Jedna', 'Pes']);
     lobbies.push(lobby);
     res.send(lobby);
 });

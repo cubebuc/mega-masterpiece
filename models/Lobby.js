@@ -2,7 +2,7 @@ class Lobby
 {
     constructor()
     {
-        this.id = getRandomInt(100000, 1000000);
+        this.id = getRandomInt(100000000, 1000000000);
         this.players = [];
         this.words = [];
     }
