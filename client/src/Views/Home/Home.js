@@ -1,21 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-function Home({setAppState, socket, setLobby}) 
+function Home({setAppState, setLobby}) 
 {
     const [nickname, setNickname] = useState("");
 
-    useEffect(() => 
+    function onSubmit(e)
     {
-        function test(value)
-        {
-            console.log(value);
-        }
+        e.preventDefault();
 
-        socket.on('test', test);
-    }, [socket]);
-
-    function onClick()
-    {
         const searchParams = new URLSearchParams(window.location.search);
         const lobbyId = searchParams.keys().next().value;
 
@@ -38,15 +30,16 @@ function Home({setAppState, socket, setLobby})
         {
             setLobby(data);
             setAppState('lobby');
-            console.log('emmit ' + data.id);
         });
     }
 
     return (
         <div>
             <h1>Home</h1>
-            <input type="text" placeholder="Nickname" value={nickname} onChange={e => setNickname(e.target.value)}/>
-            <button onClick={onClick}>Create Lobby</button>
+            <form onSubmit={onSubmit}>
+                <input type="text" placeholder="Nickname" value={nickname} onChange={e => setNickname(e.target.value)}/>
+                <button>Create Lobby</button>
+            </form>
         </div>
     );
 }

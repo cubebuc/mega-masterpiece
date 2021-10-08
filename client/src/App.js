@@ -18,8 +18,8 @@ function App()
 
   return (
     <div className="App">
-      {state === 'home' && socket && <Home setAppState={setState} socket={socket} setLobby={setLobby}/>}
-      {state === 'lobby' && lobby && <Lobby socket={socket} lobby={lobby}/>}
+      {state === 'home' && socket && <Home setAppState={setState} setLobby={setLobby}/>}
+      {state === 'lobby' && lobby && <Lobby socket={socket} lobby={lobby} setLobby={setLobby}/>}
     </div>
   );
 }
