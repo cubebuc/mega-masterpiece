@@ -1,6 +1,6 @@
 const express = require('express');
 const http = require('http');
-const { Server } = require('socket.io');
+const { Server, Socket } = require('socket.io');
 const Lobby = require('./models/Lobby.js');
 
 const PORT = process.env.PORT || 5000;
@@ -13,7 +13,6 @@ app.use(express.json());
 
 const server = http.createServer(app);
 const io = new Server(server);
-//io.emit('key', value);
 
 server.listen(PORT, () =>
 {
@@ -22,9 +21,7 @@ server.listen(PORT, () =>
 
 app.post('/join', (req, res) =>
 {
-    io.emit('test', 'test');
-
-    let player = req.body.player;
+    let nickname = req.body.nickname;
     let id = req.body.id;
 
     let lobby = lobbies.find(l => l.id == id)
@@ -34,7 +31,11 @@ app.post('/join', (req, res) =>
         lobby.setWords(['Kočka', 'Pes', 'Žirafa', 'Slon', 'Ptakopysk', 'Lemur']);
     }
 
-    lobby.addPlayer(player);
+    console.log(lobby.id);
+
+    lobby.addPlayer(nickname);
     lobbies.push(lobby);
+
+    io.emit(lobby.id + '/connect', nickname);
     res.send(lobby);
 });

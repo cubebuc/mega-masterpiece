@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-function Home({setAppState, socket}) 
+function Home({setAppState, socket, setLobby}) 
 {
     const [nickname, setNickname] = useState("");
 
@@ -12,19 +12,17 @@ function Home({setAppState, socket})
         }
 
         socket.on('test', test);
-    }, [socket])
+    }, [socket]);
 
     function onClick()
     {
-        setAppState('lobby');
-
         const searchParams = new URLSearchParams(window.location.search);
         const lobbyId = searchParams.keys().next().value;
 
         let options = 
         {
             method: 'POST',
-            body: JSON.stringify({player: nickname, id: lobbyId}),
+            body: JSON.stringify({nickname: nickname, id: lobbyId}),
             headers: 
             {
               'Content-Type': 'application/json'
@@ -38,7 +36,9 @@ function Home({setAppState, socket})
         })
         .then(data =>
         {
-            console.log(data);
+            setLobby(data);
+            setAppState('lobby');
+            console.log('emmit ' + data.id);
         });
     }
 
