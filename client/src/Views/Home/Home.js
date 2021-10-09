@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-
-function Home({setAppState, setLobby}) 
+function Home({setAppView, socket, setLobby}) 
 {
     const [nickname, setNickname] = useState("");
 
@@ -11,10 +10,12 @@ function Home({setAppState, setLobby})
         const searchParams = new URLSearchParams(window.location.search);
         const lobbyId = searchParams.keys().next().value;
 
+        console.log({nickname: nickname, lobbyId: lobbyId, socketId: socket.id});
+
         let options = 
         {
             method: 'POST',
-            body: JSON.stringify({nickname: nickname, id: lobbyId}),
+            body: JSON.stringify({nickname: nickname, lobbyId: lobbyId, socketId: socket.id}),
             headers: 
             {
               'Content-Type': 'application/json'
@@ -29,7 +30,11 @@ function Home({setAppState, setLobby})
         .then(data =>
         {
             setLobby(data);
-            setAppState('lobby');
+            setAppView('lobby');
+        })
+        .catch(e =>
+        {
+            console.log(e);
         });
     }
 
@@ -38,7 +43,7 @@ function Home({setAppState, setLobby})
             <h1>Home</h1>
             <form onSubmit={onSubmit}>
                 <input type="text" placeholder="Nickname" value={nickname} onChange={e => setNickname(e.target.value)}/>
-                <button>Create Lobby</button>
+                <button>Join Lobby</button>
             </form>
         </div>
     );

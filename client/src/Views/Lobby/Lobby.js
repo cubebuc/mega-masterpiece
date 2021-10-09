@@ -1,38 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import Player from './Player'
+import React from 'react';
+import Options from './Options';
+import PlayerList from './PlayerList';
 
-function Lobby({socket, lobby, setLobby}) 
+function Lobby({setAppView, socket, lobby, setLobby}) 
 {
-    const [words, setWords] = useState(lobby.words);
-
-    useEffect(() => 
+    function isAdmin()
     {
-        function userConnectedToLobby(nickname)
-        {
-            let newLobby = JSON.parse(JSON.stringify(lobby));
-            newLobby.players.push(nickname);
-            setLobby(newLobby);
-        }
+        return socket.id === lobby.players[0].id;
+    }
 
-        socket.on(lobby.id + '/connect', userConnectedToLobby);
-
-        return () =>
-        {
-            socket.off(lobby.id + '/connect', userConnectedToLobby);
-        }
-    });
-
-    useEffect(() => 
+    function onClick()
     {
-        console.log(lobby.players);
-    }, [lobby])
+        setAppView('game');
+    }
 
     return (
         <div>
             <h1>Lobby</h1>
             <strong>{window.location.protocol}//{window.location.host}/?{lobby.id}</strong>
-            {lobby.players.map((player, index) => <Player key={index} nickname={player}/>)}
-            <textarea cols="50" rows="10" style={{resize: 'none'}} value={words.join(',')} onChange={e => setWords((e.target.value).split(','))}></textarea>
+            <Options socket={socket} lobby={lobby} isAdmin={isAdmin} />
+            <PlayerList socket={socket} lobby={lobby} setLobby={setLobby} />
+            <button onClick={onClick} disabled={!isAdmin()}>Start</button>
         </div>
     );
 }
