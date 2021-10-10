@@ -1,10 +1,72 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
-function Game({socket, lobby}) 
+function Game({socket, lobby, isAdmin}) 
 {
+    const canvasRef = useRef(null);
+    const contextRef = useRef(null);
+
+    useEffect(() =>
+    {
+        const context = canvasRef.current.getContext('2d');
+        context.lineCap = 'round';
+        context.lineJoin = 'round';
+        context.strokeStyle = 'black';
+        context.lineWidth = 15;
+        contextRef.current = context;
+
+        socket.on('startDrawing', startDrawing);
+        socket.on('draw', draw);
+
+        return () =>
+        {
+            socket.off('startDrawing', startDrawing);
+            socket.off('draw', draw);
+        }
+    }, [socket]);
+
+    function onMouseDown(e)
+    {
+        if(e.buttons !== 1 || !isAdmin())
+            return;
+
+        const x = e.clientX - e.target.offsetLeft;
+        const y = e.clientY - e.target.offsetTop;
+        let pos = {x: x, y: y};
+        startDrawing(pos);
+
+        socket.emit('startDrawing', pos);
+    }
+
+    function onMouseMove(e)
+    {
+        if(e.buttons !== 1 || !isAdmin())
+            return;
+
+        const x = e.clientX - e.target.offsetLeft;
+        const y = e.clientY - e.target.offsetTop;
+        let pos = {x: x, y: y};
+        draw(pos);
+
+        socket.emit('draw', pos);
+    }
+
+    function startDrawing(pos)
+    {
+        contextRef.current.beginPath();
+        contextRef.current.moveTo(pos.x, pos.y);
+        draw(pos);
+    }
+
+    function draw(pos)
+    {
+        contextRef.current.lineTo(pos.x, pos.y);
+        contextRef.current.stroke();
+    }
+
     return (
         <div>
             <h1>Game</h1>
+            <canvas width="1000" height="1000" style={{backgroundColor: 'lightgray'}} ref={canvasRef} onMouseDown={onMouseDown} onMouseMove={onMouseMove} />
         </div>
     )
 }

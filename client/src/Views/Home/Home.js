@@ -1,8 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 function Home({setAppView, socket, setLobby}) 
 {
     const [nickname, setNickname] = useState("");
 
+    useEffect(() => 
+    {
+        function join(lobby)
+        {
+            setLobby(lobby);
+            setAppView('lobby');
+        }
+
+        socket.on('join', join);
+
+        return () => socket.off('join', join);
+    }, [setAppView, socket, setLobby]);
+    
     function onSubmit(e)
     {
         e.preventDefault();
@@ -10,32 +23,8 @@ function Home({setAppView, socket, setLobby})
         const searchParams = new URLSearchParams(window.location.search);
         const lobbyId = searchParams.keys().next().value;
 
-        console.log({nickname: nickname, lobbyId: lobbyId, socketId: socket.id});
-
-        let options = 
-        {
-            method: 'POST',
-            body: JSON.stringify({nickname: nickname, lobbyId: lobbyId, socketId: socket.id}),
-            headers: 
-            {
-              'Content-Type': 'application/json'
-            }
-        }
-        
-        fetch('/join', options)
-        .then(res =>
-        {
-            return res.json();
-        })
-        .then(data =>
-        {
-            setLobby(data);
-            setAppView('lobby');
-        })
-        .catch(e =>
-        {
-            console.log(e);
-        });
+        let data = {nickname: nickname, lobbyId: lobbyId}
+        socket.emit('join', data);
     }
 
     return (

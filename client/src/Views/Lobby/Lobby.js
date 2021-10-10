@@ -1,17 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Options from './Options';
 import PlayerList from './PlayerList';
 
-function Lobby({setAppView, socket, lobby, setLobby}) 
+function Lobby({setAppView, socket, lobby, setLobby, isAdmin}) 
 {
-    function isAdmin()
+    useEffect(() => 
     {
-        return socket.id === lobby.players[0].id;
-    }
+        function start()
+        {
+            setAppView('game');
+        }
+
+        socket.on('start', start);
+
+        return () => socket.off('start');
+    }, [socket, setAppView])
+
+    
 
     function onClick()
     {
         setAppView('game');
+        socket.emit('start');
     }
 
     return (

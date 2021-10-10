@@ -12,7 +12,7 @@ function App()
 
   useEffect(() => 
   {
-    const newSocket = io();
+    const newSocket = io('http://localhost:5000');
     setSocket(newSocket);
 
     return () => 
@@ -41,11 +41,16 @@ function App()
     }
   }, [socket, lobby]);
 
+  function isAdmin()
+  {
+      return socket.id === lobby.players[0].id;
+  }
+
   return (
     <div className="App">
       {appView === 'home' && socket && <Home setAppView={setAppView} socket={socket} setLobby={setLobby} />}
-      {appView === 'lobby' && lobby && <Lobby setAppView={setAppView} socket={socket} lobby={lobby} setLobby={setLobby} />}
-      {appView === 'game' && <Game socket={socket} lobby={lobby}/>}
+      {appView === 'lobby' && lobby && <Lobby setAppView={setAppView} socket={socket} lobby={lobby} setLobby={setLobby} isAdmin={isAdmin} />}
+      {appView === 'game' && <Game socket={socket} lobby={lobby} isAdmin={isAdmin} />}
     </div>
   );
 }
