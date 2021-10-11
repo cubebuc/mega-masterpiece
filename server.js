@@ -16,9 +16,22 @@ const io = new Server(server,
 
 io.on('connection', (socket) =>
 {
+    function roomEmit(event, args)
+    {
+        if(args === undefined)
+            io.to(getLobbyRoom()).except(socket.id).emit(event);
+        else
+            io.to(getLobbyRoom()).except(socket.id).emit(event, args);
+    }
+
     function getLobbyRoom()
     {
         return Array.from(socket.rooms)[1];
+    }
+
+    function getLobby()
+    {
+        return lobbies.find(l => l.players.some(p => p.id === socket.id));
     }
 
     function isAdmin()
@@ -31,7 +44,7 @@ io.on('connection', (socket) =>
         let lobby = lobbies.find(l => l.id == data.lobbyId)
         if(!lobby)
         {
-            lobby = {id: socket.id.substr(0, 16), players: [], rounds: "5", time: "90", words: ['Kočka', 'Pes', 'Žirafa', 'Slon', 'Ptakopysk', 'Lemur']};
+            lobby = {id: socket.id.substr(0, 16), inGame: false, players: [], rounds: "5", time: "90", words: ['Kočka', 'Pes', 'Žirafa', 'Slon', 'Ptakopysk', 'Lemur']};
         }
 
         let player = {id: socket.id, nickname: data.nickname};
@@ -46,42 +59,58 @@ io.on('connection', (socket) =>
     function roundsChanged(rounds)
     {
         if(isAdmin())
-            io.to(getLobbyRoom()).except(socket.id).emit('roundsChanged', rounds);
+        {
+            getLobby().rounds = rounds;
+            roomEmit('roundsChanged', rounds);
+        }
     }
 
     function timeChanged(time)
     {
         if(isAdmin())
-            io.to(getLobbyRoom()).except(socket.id).emit('timeChanged', time);
+        {
+            getLobby().time = time;
+            roomEmit('timeChanged', time);
+        }
     }
 
     function wordsChanged(words)
     {
         if(isAdmin())
-            io.to(getLobbyRoom()).except(socket.id).emit('wordsChanged', words);
+        {
+            getLobby().words = words;
+            roomEmit('wordsChanged', words);
+        }
     }
 
     function start()
     {
         if(isAdmin())
-            io.to(getLobbyRoom()).except(socket.id).emit('start');
+        {
+            getLobby().inGame = true;
+            roomEmit('start');
+        }
     }
 
     function startDrawing(pos)
     {
         if(isAdmin())
-            io.to(getLobbyRoom()).except(socket.id).emit('startDrawing', pos);
+        {
+            roomEmit('startDrawing', pos);
+        }
     }
 
     function draw(pos)
     {
         if(isAdmin())
-            io.to(getLobbyRoom()).except(socket.id).emit('draw', pos);
+        {
+            roomEmit('draw', pos);
+        }
     }
     
     function disconnecting()
     {
-        io.to(getLobbyRoom()).except(socket.id).emit('playerDisconnecting', socket.id);
+        roomEmit('playerDisconnecting', socket.id);
     }
 
     socket.on('join', join);

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
+import PlayerList from '../PlayerList';
 
-function Game({socket, lobby, isAdmin}) 
+function Game({socket, lobby, setLobby, isAdmin}) 
 {
     const canvasRef = useRef(null);
     const contextRef = useRef(null);
@@ -66,7 +67,41 @@ function Game({socket, lobby, isAdmin})
     return (
         <div>
             <h1>Game</h1>
-            <canvas width="1000" height="1000" style={{backgroundColor: 'lightgray'}} ref={canvasRef} onMouseDown={onMouseDown} onMouseMove={onMouseMove} />
+            <div className="info">
+                <div className="time">
+                    <p>Time</p>
+                </div>
+                <div className="word">
+                    <p>Current Word</p>
+                </div>
+                <div className="rounds">
+                    <p>Round X of X</p>
+                </div>
+            </div>
+            <div>
+                <PlayerList socket={socket} lobby={lobby} setLobby={setLobby} />
+                <canvas width="1000" height="1000" style={{backgroundColor: 'lightgray'}} ref={canvasRef} onMouseDown={onMouseDown} onMouseMove={onMouseMove} />
+                <div className="chat">
+                    
+                </div>
+            </div>
+            <div className="drawing-options">
+                    <div className="current-color">
+
+                    </div>
+                    <div className="colors">
+
+                    </div>
+                    <div className="drawing-modes">
+
+                    </div>
+                    <div className="brush-size">
+
+                    </div>
+                    <div className="clear-canvas">
+
+                    </div>
+            </div>
         </div>
     )
 }

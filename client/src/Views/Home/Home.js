@@ -8,7 +8,10 @@ function Home({setAppView, socket, setLobby})
         function join(lobby)
         {
             setLobby(lobby);
-            setAppView('lobby');
+            if(lobby.inGame)
+                setAppView('game');
+            else
+                setAppView('lobby');
         }
 
         socket.on('join', join);
@@ -31,7 +34,7 @@ function Home({setAppView, socket, setLobby})
         <div>
             <h1>Home</h1>
             <form onSubmit={onSubmit}>
-                <input type="text" placeholder="Nickname" value={nickname} onChange={e => setNickname(e.target.value)}/>
+                <input type="text" placeholder="Nickname" value={nickname} onChange={e => setNickname(e.target.value)} required />
                 <button>Join Lobby</button>
             </form>
         </div>

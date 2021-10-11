@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import Options from './Options';
-import PlayerList from './PlayerList';
+import PlayerList from '../PlayerList';
 
 function Lobby({setAppView, socket, lobby, setLobby, isAdmin}) 
 {
