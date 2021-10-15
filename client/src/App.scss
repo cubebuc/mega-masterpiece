@@ -1,0 +1,36 @@
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    background-color: lightgray;
+}
+
+.app {
+    margin-top: 100px;
+}
+
+.home {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    h1 {
+        font-size: 4em;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+
+        * {
+            width: 13em;
+            margin-top: 10px;
+            padding-left: 5px;
+            font-size: 1.2em;
+            border-radius: 3px;
+        }
+    }
+}

@@ -65,7 +65,7 @@ function Game({socket, lobby, setLobby, isAdmin})
     }
 
     return (
-        <div>
+        <div className="game">
             <h1>Game</h1>
             <div className="info">
                 <div className="time">

@@ -16,8 +16,6 @@ function Lobby({setAppView, socket, lobby, setLobby, isAdmin})
         return () => socket.off('start');
     }, [socket, setAppView])
 
-    
-
     function onClick()
     {
         setAppView('game');
@@ -25,7 +23,7 @@ function Lobby({setAppView, socket, lobby, setLobby, isAdmin})
     }
 
     return (
-        <div>
+        <div className="lobby">
             <h1>Lobby</h1>
             <strong>{window.location.protocol}//{window.location.host}/?{lobby.id}</strong>
             <Options socket={socket} lobby={lobby} isAdmin={isAdmin} />

@@ -31,7 +31,7 @@ function Home({setAppView, socket, setLobby})
     }
 
     return (
-        <div>
+        <div className="home">
             <h1>Home</h1>
             <form onSubmit={onSubmit}>
                 <input type="text" placeholder="Nickname" value={nickname} onChange={e => setNickname(e.target.value)} required />
