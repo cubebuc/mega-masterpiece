@@ -57,7 +57,7 @@ function Options({socket, lobby, isAdmin})
     }
 
     return (
-        <div className="options">
+        <div className="Options">
             <label htmlFor="rounds">Rounds</label>
             <select className="rounds" name="rounds" disabled={!isAdmin()} value={rounds} onChange={onRoundsSelectChange}>
                 <option value="1">1</option>
@@ -93,7 +93,7 @@ function Options({socket, lobby, isAdmin})
                 <option value="180">180</option>
             </select>
             <label htmlFor="words">Words</label>
-            <textarea className="words" cols="50" rows="10" style={{resize: 'none'}} value={words.join(',')} onChange={onWordsTextAreaChange} disabled={!isAdmin()}></textarea>
+            <textarea className="words" value={words.join(',')} onChange={onWordsTextAreaChange} disabled={!isAdmin()}></textarea>
         </div>
     )
 }

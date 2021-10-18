@@ -21,7 +21,7 @@ function PlayerList({socket, lobby, setLobby})
     }, [socket, lobby, setLobby]);
 
     return (
-        <div className="player-list">
+        <div className="PlayerList">
             {lobby.players.map((player, index) => <Player key={index} nickname={player.nickname}/>)}
         </div>
     )

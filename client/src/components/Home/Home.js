@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import './Home.scss'
+
 function Home({setAppView, socket, setLobby}) 
 {
     const [nickname, setNickname] = useState("");
@@ -31,7 +33,7 @@ function Home({setAppView, socket, setLobby})
     }
 
     return (
-        <div className="home">
+        <div className="Home">
             <h1>Home</h1>
             <form onSubmit={onSubmit}>
                 <input type="text" placeholder="Nickname" value={nickname} onChange={e => setNickname(e.target.value)} required />

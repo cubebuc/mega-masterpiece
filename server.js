@@ -45,11 +45,11 @@ io.on('connection', (socket) =>
         if(!lobby)
         {
             lobby = {id: socket.id.substr(0, 16), inGame: false, players: [], rounds: "5", time: "90", words: ['Kočka', 'Pes', 'Žirafa', 'Slon', 'Ptakopysk', 'Lemur']};
+            lobbies.push(lobby);
         }
 
         let player = {id: socket.id, nickname: data.nickname};
         lobby.players.push(player);
-        lobbies.push(lobby);
 
         io.to(lobby.id).emit('playerJoined', player);
         io.to(socket.id).socketsJoin(lobby.id);
@@ -110,6 +110,9 @@ io.on('connection', (socket) =>
     
     function disconnecting()
     {
+        console.log(getLobby());
+        let index = getLobby().players.findIndex(p => p.id === socket.id);
+        getLobby().players.splice(index, 1);
         roomEmit('playerDisconnecting', socket.id);
     }
 

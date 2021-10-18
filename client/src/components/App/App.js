@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import io from 'socket.io-client';
-import Home from './Views/Home/Home';
-import Lobby from './Views/Lobby/Lobby';
-import Game from './Views/Game/Game'
+import Home from '../Home/Home';
+import Lobby from '../Lobby/Lobby';
+import Game from '../Game/Game'
+import './App.scss'
 
 function App() 
 {
@@ -47,7 +48,7 @@ function App()
   }
 
   return (
-    <div className="app">
+    <div className="App">
       {appView === 'home' && socket && <Home setAppView={setAppView} socket={socket} setLobby={setLobby} />}
       {appView === 'lobby' && lobby && <Lobby setAppView={setAppView} socket={socket} lobby={lobby} setLobby={setLobby} isAdmin={isAdmin} />}
       {appView === 'game' && <Game socket={socket} lobby={lobby} setLobby={setLobby} isAdmin={isAdmin} />}

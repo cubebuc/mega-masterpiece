@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import Options from './Options';
 import PlayerList from '../PlayerList';
+import './Lobby.scss'
 
 function Lobby({setAppView, socket, lobby, setLobby, isAdmin}) 
 {
@@ -23,11 +24,16 @@ function Lobby({setAppView, socket, lobby, setLobby, isAdmin})
     }
 
     return (
-        <div className="lobby">
+        <div className="Lobby">
             <h1>Lobby</h1>
             <strong>{window.location.protocol}//{window.location.host}/?{lobby.id}</strong>
-            <Options socket={socket} lobby={lobby} isAdmin={isAdmin} />
-            <PlayerList socket={socket} lobby={lobby} setLobby={setLobby} />
+            <div className="options-players">
+                <Options socket={socket} lobby={lobby} isAdmin={isAdmin} />
+                <div className="players">
+                    <label for="player-list">Players</label>
+                    <PlayerList id="player-list" socket={socket} lobby={lobby} setLobby={setLobby} />
+                </div>
+            </div>
             <button onClick={onClick} disabled={!isAdmin()}>Start</button>
         </div>
     );

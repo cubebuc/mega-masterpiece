@@ -1,0 +1,53 @@
+.Lobby {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .options-players {
+        display: flex;
+        margin-top: 40px;
+        
+        * {
+            margin-top: 5px;
+            font-size: 1.1em;
+            border-radius: 3px;
+        }
+
+        select, textarea {
+            padding: 2px;
+        }
+    }
+
+    .Options {
+        display: flex;
+        flex-direction: column;
+        width: 400px;
+        margin-right: 50px; 
+
+        textarea {
+            resize: none;
+            height: 200px;
+        }
+    }
+
+    .PlayerList {
+        display: flex;
+        width: 400px;
+        height: 92%;
+        background-color: rgb(189, 189, 189);
+
+        * {
+            margin: 3px 5px;
+        }
+    }
+
+    strong {
+        margin-top: 20px;
+    }
+
+    button {
+        width: 500px;
+        height: 30px;
+        margin-top: 30px;
+    }
+}
