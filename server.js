@@ -41,7 +41,7 @@ io.on('connection', (socket) =>
 
     function join(data)
     {
-        let lobby = lobbies.find(l => l.id == data.lobbyId)
+        let lobby = lobbies.find(l => l.id === data.lobbyId)
         if(!lobby)
         {
             lobby = {id: socket.id.substr(0, 16), inGame: false, players: [], rounds: "5", time: "90", words: ['Kočka', 'Pes', 'Žirafa', 'Slon', 'Ptakopysk', 'Lemur']};
@@ -107,12 +107,30 @@ io.on('connection', (socket) =>
             roomEmit('draw', pos);
         }
     }
+
+    function pictureDataRequested(socketId)
+    {
+        roomEmit('pictureDataRequested', socketId);
+    }
+
+    function pictureDataSent(data)
+    {
+        if(isAdmin())
+            console.log(data.socketId);
+    }
     
     function disconnecting()
     {
-        console.log(getLobby());
-        let index = getLobby().players.findIndex(p => p.id === socket.id);
-        getLobby().players.splice(index, 1);
+        let lobby = getLobby();
+        if(!lobby)
+            return;
+        let playerIndex = lobby.players.findIndex(p => p.id === socket.id);
+        lobby.players.splice(playerIndex, 1);
+        if(lobby.players.length == 0)
+        {
+            let lobbyIndex = lobbies.indexOf(lobby);
+            lobbies.splice(lobbyIndex, 1);
+        }
         roomEmit('playerDisconnecting', socket.id);
     }
 
@@ -123,6 +141,8 @@ io.on('connection', (socket) =>
     socket.on('start', start);
     socket.on('draw', draw);
     socket.on('startDrawing', startDrawing);
+    socket.on('pictureDataRequested', pictureDataRequested);
+    socket.on('pictureDataSent', pictureDataSent);
     socket.on('disconnecting', disconnecting);
 });
 
