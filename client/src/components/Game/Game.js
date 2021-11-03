@@ -16,15 +16,24 @@ function Game({socket, lobby, setLobby, isAdmin})
         context.lineWidth = 15;
         contextRef.current = context;
 
+        function pictureDataRequested(socketId)
+        {
+            if(isAdmin())
+                console.log(socketId);
+        }
+
+        socket.emit('pictureDataRequested', socket.id);
+
         socket.on('startDrawing', startDrawing);
         socket.on('draw', draw);
+        socket.on('pictureDataRequested', pictureDataRequested);
 
         return () =>
         {
             socket.off('startDrawing', startDrawing);
             socket.off('draw', draw);
         }
-    }, [socket]);
+    }, []);
 
     function onMouseDown(e)
     {
