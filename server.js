@@ -110,9 +110,16 @@ io.on('connection', (socket) =>
     
     function disconnecting()
     {
-        console.log(getLobby());
-        let index = getLobby().players.findIndex(p => p.id === socket.id);
-        getLobby().players.splice(index, 1);
+        let lobby = getLobby();
+        if(!lobby)
+            return;
+        let playerIndex = lobby.players.findIndex(p => p.id === socket.id);
+        lobby.players.splice(playerIndex, 1);
+        if(lobby.players.length === 0)
+        {
+            let lobbyIndex = lobbies.indexOf(lobby);
+            lobbies.splice(lobbyIndex, 1);
+        }
         roomEmit('playerDisconnecting', socket.id);
     }
 

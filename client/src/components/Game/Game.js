@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import PlayerList from '../PlayerList';
+import './Game.scss'
 
 function Game({socket, lobby, setLobby, isAdmin}) 
 {
@@ -78,7 +79,7 @@ function Game({socket, lobby, setLobby, isAdmin})
                     <p>Round X of X</p>
                 </div>
             </div>
-            <div>
+            <div className="players-game-chat">
                 <PlayerList socket={socket} lobby={lobby} setLobby={setLobby} />
                 <canvas width="1000" height="1000" style={{backgroundColor: 'lightgray'}} ref={canvasRef} onMouseDown={onMouseDown} onMouseMove={onMouseMove} />
                 <div className="chat">

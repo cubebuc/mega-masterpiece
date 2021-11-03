@@ -1,0 +1,33 @@
+.Game {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .info {
+        display: flex;
+        width: 800px;
+        justify-content: space-between;
+
+        * {
+            
+            font-size: 1.1em;
+        }
+    }
+
+    .players-game-chat {
+        display: flex;
+
+        * {
+            font-size: 1.1em;
+        }
+    }
+
+    .PlayerList {
+        width: 100px;
+    }
+
+    canvas {
+        border: 4px solid gray;
+        border-radius: 5px;
+    }
+}
