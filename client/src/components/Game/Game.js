@@ -33,7 +33,7 @@ function Game({socket, lobby, setLobby, isAdmin})
             socket.off('startDrawing', startDrawing);
             socket.off('draw', draw);
         }
-    }, []);
+    }, [socket, isAdmin]);
 
     function onMouseDown(e)
     {
