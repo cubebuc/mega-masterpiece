@@ -19,7 +19,22 @@ function Game({socket, lobby, setLobby, isAdmin})
         function pictureDataRequested(socketId)
         {
             if(isAdmin())
-                console.log(socketId);
+            {
+                //let pictureData = contextRef.current.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
+                let pictureData = 'random pixels mf';
+                let data = {socketId: socketId, pictureData: pictureData};
+                socket.emit('pictureDataSent', data);
+            }
+        }
+
+        function pictureDataSent(data)
+        {
+            console.log('Data recieved');
+        }
+
+        function ready()
+        {
+            console.log('ALL READY');
         }
 
         socket.emit('pictureDataRequested', socket.id);
@@ -27,6 +42,8 @@ function Game({socket, lobby, setLobby, isAdmin})
         socket.on('startDrawing', startDrawing);
         socket.on('draw', draw);
         socket.on('pictureDataRequested', pictureDataRequested);
+        socket.on('pictureDataSent', pictureDataSent);
+        socket.on('ready', ready);
 
         return () =>
         {

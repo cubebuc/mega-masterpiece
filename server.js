@@ -1,3 +1,4 @@
+const { randomInt } = require('crypto');
 const http = require('http');
 const { Server } = require('socket.io');
 
@@ -44,16 +45,28 @@ io.on('connection', (socket) =>
         let lobby = lobbies.find(l => l.id === data.lobbyId)
         if(!lobby)
         {
-            lobby = {id: socket.id.substr(0, 16), inGame: false, players: [], rounds: "5", time: "90", words: ['Kočka', 'Pes', 'Žirafa', 'Slon', 'Ptakopysk', 'Lemur']};
+            lobby = {id: socket.id.substr(0, 16), inGame: false, players: [], rounds: "5", time: "90", words: ['Kočka', 'Pes', 'Žirafa', 'Slon', 'Ptakopysk', 'Lemur'], currentWord: ""};
             lobbies.push(lobby);
         }
 
-        let player = {id: socket.id, nickname: data.nickname};
+        let player = {id: socket.id, nickname: data.nickname, onTurn: false, ready: false};
         lobby.players.push(player);
 
         io.to(lobby.id).emit('playerJoined', player);
         io.to(socket.id).socketsJoin(lobby.id);
         io.to(socket.id).emit('join', lobby);
+    }
+
+    function ready()
+    {
+        let lobby = getLobby();
+        let index = lobby.players.findIndex(p => p.id === socket.id);
+        lobby.players[index].ready = true;
+
+        if(lobby.players.every(p => p.ready))
+        {
+            io.to(getLobbyRoom()).emit('ready');
+        }
     }
 
     function roundsChanged(rounds)
@@ -83,12 +96,18 @@ io.on('connection', (socket) =>
         }
     }
 
-    function start()
+    function joinGame()
     {
         if(isAdmin())
         {
-            getLobby().inGame = true;
-            roomEmit('start');
+            let lobby = getLobby();
+            lobby.inGame = true;
+            lobby.players[0].onTurn = true;
+            
+            let index = randomInt(lobby.words.length);
+            lobby.currentWord = lobby.words[index];
+
+            roomEmit('joinGame');
         }
     }
 
@@ -116,7 +135,9 @@ io.on('connection', (socket) =>
     function pictureDataSent(data)
     {
         if(isAdmin())
-            console.log(data.socketId);
+        {
+            io.to(data.socketId).emit('pictureDataSent', data.pictureData);
+        }
     }
     
     function disconnecting()
@@ -135,10 +156,11 @@ io.on('connection', (socket) =>
     }
 
     socket.on('join', join);
+    socket.on('ready', ready);
     socket.on('roundsChanged', roundsChanged);
     socket.on('timeChanged', timeChanged);
     socket.on('wordsChanged', wordsChanged);
-    socket.on('start', start);
+    socket.on('joinGame', joinGame);
     socket.on('draw', draw);
     socket.on('startDrawing', startDrawing);
     socket.on('pictureDataRequested', pictureDataRequested);

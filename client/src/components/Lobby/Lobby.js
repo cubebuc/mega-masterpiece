@@ -7,20 +7,22 @@ function Lobby({setAppView, socket, lobby, setLobby, isAdmin})
 {
     useEffect(() => 
     {
-        function start()
+        function joinGame()
         {
             setAppView('game');
+            socket.emit('ready');
         }
 
-        socket.on('start', start);
+        socket.on('joinGame', joinGame);
 
-        return () => socket.off('start');
+        return () => socket.off('joinGame');
     }, [socket, setAppView])
 
     function onClick()
     {
+        socket.emit('joinGame');
         setAppView('game');
-        socket.emit('start');
+        socket.emit('ready');
     }
 
     return (
