@@ -7,6 +7,12 @@ function Game({socket, lobby, setLobby, isAdmin})
     const canvasRef = useRef(null);
     const contextRef = useRef(null);
 
+    useEffect(() => 
+    {
+        socket.emit('pictureDataRequested', socket.id);
+        console.log('load');
+    }, []);
+
     useEffect(() =>
     {
         const context = canvasRef.current.getContext('2d');
@@ -20,24 +26,31 @@ function Game({socket, lobby, setLobby, isAdmin})
         {
             if(isAdmin())
             {
-                //let pictureData = contextRef.current.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
-                let pictureData = 'random pixels mf';
-                let data = {socketId: socketId, pictureData: pictureData};
+                console.log(canvasRef.current.width, canvasRef.current.height);
+                let bufferT = contextRef.current.getImageData(0, 0, 800, 300).data.buffer;
+                let bufferB = contextRef.current.getImageData(0, 300, 800, 300).data.buffer;
+                let arrayT = new Uint8ClampedArray(bufferT);
+                let arrayB = new Uint8ClampedArray(bufferB);
+                let array = [arrayT, arrayB];
+                let data = {socketId: socketId, pictureData: array};
                 socket.emit('pictureDataSent', data);
             }
         }
 
         function pictureDataSent(data)
         {
-            console.log('Data recieved');
+            let arrayT = new Uint8ClampedArray(data[0]);
+            let arrayB = new Uint8ClampedArray(data[1]);
+            let imageT = new ImageData(arrayT, 800, 300);
+            let imageB = new ImageData(arrayB, 800, 300);
+            contextRef.current.putImageData(imageT, 0, 0);
+            contextRef.current.putImageData(imageB, 0, 300);
         }
 
         function ready()
         {
             console.log('ALL READY');
         }
-
-        socket.emit('pictureDataRequested', socket.id);
 
         socket.on('startDrawing', startDrawing);
         socket.on('draw', draw);
@@ -49,6 +62,9 @@ function Game({socket, lobby, setLobby, isAdmin})
         {
             socket.off('startDrawing', startDrawing);
             socket.off('draw', draw);
+            socket.off('pictureDataRequested', pictureDataRequested);
+            socket.off('pictureDataSent', pictureDataSent);
+            socket.off('ready', ready);
         }
     }, [socket, isAdmin]);
 
@@ -107,7 +123,7 @@ function Game({socket, lobby, setLobby, isAdmin})
             </div>
             <div className="players-game-chat">
                 <PlayerList socket={socket} lobby={lobby} setLobby={setLobby} />
-                <canvas width="1000" height="1000" style={{backgroundColor: 'lightgray'}} ref={canvasRef} onMouseDown={onMouseDown} onMouseMove={onMouseMove} />
+                <canvas width="800" height="600" style={{backgroundColor: 'lightgray'}} ref={canvasRef} onMouseDown={onMouseDown} onMouseMove={onMouseMove} />
                 <div className="chat">
                     
                 </div>
