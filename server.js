@@ -48,35 +48,6 @@ io.on('connection', (socket) =>
         return lobbies.some(l => l.players[0].id === socket.id);
     }
 
-    function join(data)
-    {
-        let lobby = lobbies.find(l => l.id === data.lobbyId)
-        if(!lobby)
-        {
-            lobby = {id: socket.id.substr(0, 16), inGame: false, players: [], rounds: "5", time: "90", words: ['Kočka', 'Pes', 'Žirafa', 'Slon', 'Ptakopysk', 'Lemur'], currentWord: ""};
-            lobbies.push(lobby);
-        }
-
-        let player = {id: socket.id, nickname: data.nickname, onTurn: false, ready: false};
-        lobby.players.push(player);
-
-        io.to(lobby.id).emit('playerJoined', player);
-        io.to(socket.id).socketsJoin(lobby.id);
-        io.to(socket.id).emit('join', lobby);
-    }
-
-    function ready()
-    {
-        let lobby = getLobby();
-        let index = lobby.players.findIndex(p => p.id === socket.id);
-        lobby.players[index].ready = true;
-
-        if(lobby.players.every(p => p.ready))
-        {
-            io.to(lobby.players[0].id).emit('allReady');
-        }
-    }
-
     function roundsChanged(rounds)
     {
         if(isAdmin())
@@ -148,6 +119,35 @@ io.on('connection', (socket) =>
         }
     }
 
+    function join(data)
+    {
+        let lobby = lobbies.find(l => l.id === data.lobbyId)
+        if(!lobby)
+        {
+            lobby = {id: socket.id.substr(0, 16), inGame: false, players: [], rounds: "5", time: "90", words: ['Kočka', 'Pes', 'Žirafa', 'Slon', 'Ptakopysk', 'Lemur'], currentWord: ""};
+            lobbies.push(lobby);
+        }
+
+        let player = {id: socket.id, nickname: data.nickname, onTurn: false, ready: false};
+        lobby.players.push(player);
+
+        io.to(lobby.id).emit('playerJoined', player);
+        io.to(socket.id).socketsJoin(lobby.id);
+        io.to(socket.id).emit('join', lobby);
+    }
+
+    function ready()
+    {
+        let lobby = getLobby();
+        let index = lobby.players.findIndex(p => p.id === socket.id);
+        lobby.players[index].ready = true;
+
+        if(lobby.players.every(p => p.ready))
+        {
+            io.to(lobby.players[0].id).emit('allReady');
+        }
+    }
+
     function initGame()
     {
         let lobby = getLobby();
@@ -172,8 +172,6 @@ io.on('connection', (socket) =>
         otherEmit('playerDisconnecting', socket.id);
     }
 
-    socket.on('join', join);
-    socket.on('ready', ready);
     socket.on('roundsChanged', roundsChanged);
     socket.on('timeChanged', timeChanged);
     socket.on('wordsChanged', wordsChanged);
@@ -182,6 +180,8 @@ io.on('connection', (socket) =>
     socket.on('startDrawing', startDrawing);
     socket.on('pictureDataRequested', pictureDataRequested);
     socket.on('pictureDataSent', pictureDataSent);
+    socket.on('join', join);
+    socket.on('ready', ready);
     socket.on('initGame', initGame);
     socket.on('disconnecting', disconnecting);
 });
