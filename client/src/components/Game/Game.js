@@ -2,16 +2,10 @@ import React, { useEffect, useRef } from 'react';
 import PlayerList from '../PlayerList';
 import './Game.scss'
 
-function Game({socket, lobby, setLobby, isAdmin}) 
+function Game({socket, lobby, setLobby, isAdmin, isOnTurn}) 
 {
     const canvasRef = useRef(null);
     const contextRef = useRef(null);
-
-    useEffect(() => 
-    {
-        socket.emit('pictureDataRequested', socket.id);
-        console.log('load');
-    }, []);
 
     useEffect(() =>
     {
@@ -47,16 +41,25 @@ function Game({socket, lobby, setLobby, isAdmin})
             contextRef.current.putImageData(imageB, 0, 300);
         }
 
-        function ready()
+        function allReady()
         {
-            console.log('ALL READY');
+            socket.emit('initGame');
         }
+
+        function newPlayerOnTurn(index)
+        {
+            lobby.players[index].onTurn = true;
+            console.log('On turn: ' + lobby.players[index].nickname);
+        }
+
+        socket.emit('pictureDataRequested', socket.id);
 
         socket.on('startDrawing', startDrawing);
         socket.on('draw', draw);
         socket.on('pictureDataRequested', pictureDataRequested);
         socket.on('pictureDataSent', pictureDataSent);
-        socket.on('ready', ready);
+        socket.on('allReady', allReady);
+        socket.on('newPlayerOnTurn', newPlayerOnTurn);
 
         return () =>
         {
@@ -64,7 +67,7 @@ function Game({socket, lobby, setLobby, isAdmin})
             socket.off('draw', draw);
             socket.off('pictureDataRequested', pictureDataRequested);
             socket.off('pictureDataSent', pictureDataSent);
-            socket.off('ready', ready);
+            socket.off('allReady', allReady);
         }
     }, [socket, isAdmin]);
 

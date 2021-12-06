@@ -17,12 +17,20 @@ const io = new Server(server,
 
 io.on('connection', (socket) =>
 {
-    function roomEmit(event, args)
+    function otherEmit(event, args)
     {
         if(args === undefined)
             io.to(getLobbyRoom()).except(socket.id).emit(event);
         else
             io.to(getLobbyRoom()).except(socket.id).emit(event, args);
+    }
+
+    function roomEmit(event, args)
+    {
+        if(args === undefined)
+            io.to(getLobbyRoom()).emit(event);
+        else
+            io.to(getLobbyRoom()).emit(event, args);
     }
 
     function getLobbyRoom()
@@ -65,7 +73,7 @@ io.on('connection', (socket) =>
 
         if(lobby.players.every(p => p.ready))
         {
-            io.to(getLobbyRoom()).emit('ready');
+            io.to(lobby.players[0].id).emit('allReady');
         }
     }
 
@@ -74,7 +82,7 @@ io.on('connection', (socket) =>
         if(isAdmin())
         {
             getLobby().rounds = rounds;
-            roomEmit('roundsChanged', rounds);
+            otherEmit('roundsChanged', rounds);
         }
     }
 
@@ -83,7 +91,7 @@ io.on('connection', (socket) =>
         if(isAdmin())
         {
             getLobby().time = time;
-            roomEmit('timeChanged', time);
+            otherEmit('timeChanged', time);
         }
     }
 
@@ -92,7 +100,7 @@ io.on('connection', (socket) =>
         if(isAdmin())
         {
             getLobby().words = words;
-            roomEmit('wordsChanged', words);
+            otherEmit('wordsChanged', words);
         }
     }
 
@@ -107,7 +115,7 @@ io.on('connection', (socket) =>
             let index = randomInt(lobby.words.length);
             lobby.currentWord = lobby.words[index];
 
-            roomEmit('joinGame');
+            otherEmit('joinGame');
         }
     }
 
@@ -115,7 +123,7 @@ io.on('connection', (socket) =>
     {
         if(isAdmin())
         {
-            roomEmit('startDrawing', pos);
+            otherEmit('startDrawing', pos);
         }
     }
 
@@ -123,13 +131,13 @@ io.on('connection', (socket) =>
     {
         if(isAdmin())
         {
-            roomEmit('draw', pos);
+            otherEmit('draw', pos);
         }
     }
 
     function pictureDataRequested(socketId)
     {
-        roomEmit('pictureDataRequested', socketId);
+        otherEmit('pictureDataRequested', socketId);
     }
 
     function pictureDataSent(data)
@@ -138,6 +146,15 @@ io.on('connection', (socket) =>
         {
             io.to(data.socketId).emit('pictureDataSent', data.pictureData);
         }
+    }
+
+    function initGame()
+    {
+        let lobby = getLobby();
+        let index = randomInt(0, lobby.players.length);
+        lobby.players[index].onTurn = true;
+        console.log('On turn: ' + lobby.players[index].nickname);
+        roomEmit('newPlayerOnTurn', index);
     }
     
     function disconnecting()
@@ -152,7 +169,7 @@ io.on('connection', (socket) =>
             let lobbyIndex = lobbies.indexOf(lobby);
             lobbies.splice(lobbyIndex, 1);
         }
-        roomEmit('playerDisconnecting', socket.id);
+        otherEmit('playerDisconnecting', socket.id);
     }
 
     socket.on('join', join);
@@ -165,6 +182,7 @@ io.on('connection', (socket) =>
     socket.on('startDrawing', startDrawing);
     socket.on('pictureDataRequested', pictureDataRequested);
     socket.on('pictureDataSent', pictureDataSent);
+    socket.on('initGame', initGame);
     socket.on('disconnecting', disconnecting);
 });
 
