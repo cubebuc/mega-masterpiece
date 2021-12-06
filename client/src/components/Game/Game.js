@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import PlayerList from '../PlayerList';
+import Chat from './Chat/Chat';
 import './Game.scss'
 
 function Game({socket, lobby, setLobby, isAdmin, isOnTurn}) 
@@ -20,7 +21,6 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         {
             if(isAdmin())
             {
-                console.log(canvasRef.current.width, canvasRef.current.height);
                 let bufferT = contextRef.current.getImageData(0, 0, 800, 300).data.buffer;
                 let bufferB = contextRef.current.getImageData(0, 300, 800, 300).data.buffer;
                 let arrayT = new Uint8ClampedArray(bufferT);
@@ -41,15 +41,11 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             contextRef.current.putImageData(imageB, 0, 300);
         }
 
-        function allReady()
+        function newPlayerOnTurn(data)
         {
-            socket.emit('initGame');
-        }
-
-        function newPlayerOnTurn(index)
-        {
-            lobby.players[index].onTurn = true;
-            console.log('On turn: ' + lobby.players[index].nickname);
+            lobby.players[data[0]].onTurn = true;
+            lobby.currentWord = lobby.words[data[1]];
+            console.log('--------------\nOn turn: ' + lobby.players[data[0]].nickname + '\nWith word: ' + lobby.currentWord);
         }
 
         socket.emit('pictureDataRequested', socket.id);
@@ -58,7 +54,6 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         socket.on('draw', draw);
         socket.on('pictureDataRequested', pictureDataRequested);
         socket.on('pictureDataSent', pictureDataSent);
-        socket.on('allReady', allReady);
         socket.on('newPlayerOnTurn', newPlayerOnTurn);
 
         return () =>
@@ -67,13 +62,13 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             socket.off('draw', draw);
             socket.off('pictureDataRequested', pictureDataRequested);
             socket.off('pictureDataSent', pictureDataSent);
-            socket.off('allReady', allReady);
+            socket.off('newPlayerOnTurn', newPlayerOnTurn);
         }
     }, [socket, isAdmin]);
 
     function onMouseDown(e)
     {
-        if(e.buttons !== 1 || !isAdmin())
+        if(e.buttons !== 1 || !isOnTurn())
             return;
 
         const x = e.clientX - e.target.offsetLeft;
@@ -86,7 +81,7 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
 
     function onMouseMove(e)
     {
-        if(e.buttons !== 1 || !isAdmin())
+        if(e.buttons !== 1 || !isOnTurn())
             return;
 
         const x = e.clientX - e.target.offsetLeft;
@@ -127,9 +122,7 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             <div className="players-game-chat">
                 <PlayerList socket={socket} lobby={lobby} setLobby={setLobby} />
                 <canvas width="800" height="600" style={{backgroundColor: 'lightgray'}} ref={canvasRef} onMouseDown={onMouseDown} onMouseMove={onMouseMove} />
-                <div className="chat">
-                    
-                </div>
+                <Chat socket={socket} />
             </div>
             <div className="drawing-options">
                     <div className="current-color">
@@ -149,7 +142,7 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
                     </div>
             </div>
         </div>
-    )
+    );
 }
 
 export default Game;

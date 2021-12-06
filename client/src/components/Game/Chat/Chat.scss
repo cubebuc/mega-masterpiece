@@ -1,0 +1,21 @@
+.Chat {
+    display: flex;
+    width: 300px;
+    height: 608px;
+    flex-direction: column;
+    border: 4px solid gray;
+    border-radius: 0 5px 5px 0;
+    border-left: 0;
+    font-size: 1em !important;
+
+    div {
+        padding: 5px;
+        flex-grow: 1;
+        overflow-y: auto;
+    }
+
+    input {
+        padding-inline: 2px;
+        margin: 2px;
+    }
+}
