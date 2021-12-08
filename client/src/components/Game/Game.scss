@@ -31,4 +31,25 @@
         border-radius: 5px;
         border-radius: 5px 0 0 5px;
     }
+
+    .overlay {
+        display: flex;
+        position: absolute;
+        width: 800px;
+        height: 600px;
+        margin: 4px;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(0, 0, 0, .6);
+        opacity: 0;
+        transition-duration: 1000ms;
+        text-align: center;
+        font-size: 2em;
+        pointer-events: none;
+    }
+
+    .active {
+        opacity: 1;
+        pointer-events: all;
+    }
 }

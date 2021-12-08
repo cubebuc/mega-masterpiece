@@ -127,6 +127,27 @@ io.on('connection', (socket) =>
     function messageSent(message)
     {
         console.log('Message recieved: ' + message);
+        let lobby = getLobby();
+        let player = lobby.players.find(p => p.id === socket.id);
+        if(player.guessed)
+        {
+            for(let p of lobby.players)
+            {
+                if(p.guessed && p.id != socket.id)
+                {
+                    io.to(p.id).emit('messageSent', message);
+                }
+            }
+            return;
+        }
+        else if(message.value.toUpperCase() == lobby.currentWord.toUpperCase())
+        {
+            console.log(lobby.players.find(p => p.id === socket.id).guessed);
+            player.guessed = true;
+            roomEmit('playerGuessed', socket.id);
+            return;
+        }
+        
         otherEmit('messageSent', message);
     }
 
@@ -139,7 +160,7 @@ io.on('connection', (socket) =>
             lobbies.push(lobby);
         }
 
-        let player = {id: socket.id, nickname: data.nickname, onTurn: false, ready: false};
+        let player = {id: socket.id, nickname: data.nickname, onTurn: false, ready: false, guessed: false};
         lobby.players.push(player);
 
         io.to(lobby.id).emit('playerJoined', player);
@@ -164,10 +185,13 @@ io.on('connection', (socket) =>
         let lobby = getLobby();
         let playerIndex = randomInt(0, lobby.players.length);
         let wordIndex = randomInt(0, lobby.words.length);
-        lobby.players[playerIndex].onTurn = true;
+        let player = lobby.players[playerIndex];
+        player.onTurn = true;
         lobby.currentWord = lobby.words[wordIndex];
-        console.log('--------------\nOn turn: ' + lobby.players[playerIndex].nickname + '\nWith word: ' + lobby.currentWord);
-        roomEmit('newPlayerOnTurn', [playerIndex, wordIndex]);
+        console.log('--------------\nOn turn: ' + player.nickname + '\nWith word: ' + lobby.currentWord);
+        
+        io.to(player.id).emit('thisPlayerOnTurn', lobby.currentWord);
+        io.to(getLobbyRoom()).except(player.id).emit('otherPlayerOnTurn', [playerIndex, lobby.currentWord.length]);
     }
     
     function disconnecting()

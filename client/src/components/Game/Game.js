@@ -1,10 +1,17 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PlayerList from '../PlayerList';
 import Chat from './Chat/Chat';
 import './Game.scss'
 
 function Game({socket, lobby, setLobby, isAdmin, isOnTurn}) 
 {
+    const [currentWordLength, setCurrentWordLength] = useState(0);
+    const [overlayContent, setOverlayContent] = useState('');
+    const [overlayActive, setOverlayActive] = useState('');
+    const [time, setTime] = useState('Time: X');
+    const [word, setWord] = useState('');
+    const [rounds, setRounds] = useState('Rounds: X/X');
+
     const canvasRef = useRef(null);
     const contextRef = useRef(null);
 
@@ -41,11 +48,34 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             contextRef.current.putImageData(imageB, 0, 300);
         }
 
-        function newPlayerOnTurn(data)
+        function thisPlayerOnTurn(word)
+        {
+            lobby.players.find(p => p.id === socket.id).onTurn = true;
+            lobby.currentWord = word;
+
+            setWord(word);
+            setOverlayContent(<p>YOU WILL BE DRAWING<br/>{word}</p>);
+            setOverlayActive(' active');
+            setTimeout(() => {
+                setOverlayActive('');
+            }, 6000);
+
+            console.log('--------------\nOn turn: THIS PLAYER\nWith word: ' + word);
+        }
+
+        function otherPlayerOnTurn(data)
         {
             lobby.players[data[0]].onTurn = true;
-            lobby.currentWord = lobby.words[data[1]];
-            console.log('--------------\nOn turn: ' + lobby.players[data[0]].nickname + '\nWith word: ' + lobby.currentWord);
+            setCurrentWordLength(data[1]);
+
+            setWord(Array(data[1] + 1).join("_ "));
+            setOverlayContent(<p>NEXT WILL BE DRAWING<br/>{lobby.players[data[0]].nickname}</p>);
+            setOverlayActive(' active');
+            setTimeout(() => {
+                setOverlayActive('');
+            }, 6000);
+
+            console.log('--------------\nOn turn: ' + lobby.players[data[0]].nickname + '\nWith word length: ' + data[1]);
         }
 
         socket.emit('pictureDataRequested', socket.id);
@@ -54,7 +84,8 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         socket.on('draw', draw);
         socket.on('pictureDataRequested', pictureDataRequested);
         socket.on('pictureDataSent', pictureDataSent);
-        socket.on('newPlayerOnTurn', newPlayerOnTurn);
+        socket.on('thisPlayerOnTurn', thisPlayerOnTurn);
+        socket.on('otherPlayerOnTurn', otherPlayerOnTurn);
 
         return () =>
         {
@@ -62,9 +93,10 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             socket.off('draw', draw);
             socket.off('pictureDataRequested', pictureDataRequested);
             socket.off('pictureDataSent', pictureDataSent);
-            socket.off('newPlayerOnTurn', newPlayerOnTurn);
+            socket.off('thisPlayerOnTurn', thisPlayerOnTurn);
+            socket.off('otherPlayerOnTurn', otherPlayerOnTurn);
         }
-    }, [socket, isAdmin]);
+    }, [socket, lobby, isAdmin, currentWordLength]);
 
     function onMouseDown(e)
     {
@@ -110,19 +142,24 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             <h1>Game</h1>
             <div className="info">
                 <div className="time">
-                    <p>Time</p>
+                    <p>{time}</p>
                 </div>
                 <div className="word">
-                    <p>Current Word</p>
+                    <p>{word}</p>
                 </div>
                 <div className="rounds">
-                    <p>Round X of X</p>
+                    <p>{rounds}</p>
                 </div>
             </div>
             <div className="players-game-chat">
                 <PlayerList socket={socket} lobby={lobby} setLobby={setLobby} />
-                <canvas width="800" height="600" style={{backgroundColor: 'lightgray'}} ref={canvasRef} onMouseDown={onMouseDown} onMouseMove={onMouseMove} />
-                <Chat socket={socket} />
+                <div className="canvas">
+                    <div className={"overlay" + overlayActive}>
+                        {overlayContent}
+                    </div>
+                    <canvas width="800" height="600" style={{backgroundColor: 'lightgray'}} ref={canvasRef} onMouseDown={onMouseDown} onMouseMove={onMouseMove} />
+                </div>
+                <Chat socket={socket} lobby={lobby} />
             </div>
             <div className="drawing-options">
                     <div className="current-color">
