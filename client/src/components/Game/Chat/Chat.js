@@ -48,11 +48,11 @@ function Chat({socket, lobby})
     }
 
     return (
-        <div className="Chat">
-            <div className="messages">
-                {messages.map((message, index) => <p className="message" key={index}>{message.sender}: {message.value}</p>)}
+        <div className='Chat'>
+            <div className='messages'>
+                {messages.map((message, index) => <p className='message' key={index}>{message.sender}: {message.value}</p>)}
             </div>
-            <input type="text" onKeyDown={onKeyDown}/>
+            <input type='text' onKeyDown={onKeyDown}/>
         </div>
     );
 }

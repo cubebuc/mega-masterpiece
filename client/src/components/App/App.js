@@ -53,7 +53,7 @@ function App()
   }
 
   return (
-    <div className="App">
+    <div className='App'>
       {appView === 'home' && socket && <Home setAppView={setAppView} socket={socket} setLobby={setLobby} />}
       {appView === 'lobby' && lobby && <Lobby setAppView={setAppView} socket={socket} lobby={lobby} setLobby={setLobby} isAdmin={isAdmin} />}
       {appView === 'game' && <Game socket={socket} lobby={lobby} setLobby={setLobby} isAdmin={isAdmin} isOnTurn={isOnTurn} />}

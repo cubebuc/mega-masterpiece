@@ -1,0 +1,38 @@
+.DrawingOptions {
+    display: flex;
+
+    & > * {
+        margin: 2px;
+    }
+
+    .current-color {
+        width: 60px;
+        height: 60px;
+        border-radius: 5%;
+        background-color: black;
+    }
+
+    .colors {
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-rows: 30px 30px;
+
+        * {
+            width: 30px;
+            height: 30px;
+            border: none;
+        }
+    }
+
+    .drawing-modes {
+        * {
+            width: 60px;
+            height: 60px;
+            margin-right: 2px;
+        }
+
+        :last-child {
+            margin-right: 0;
+        }
+    }
+}
