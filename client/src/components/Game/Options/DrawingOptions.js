@@ -40,7 +40,6 @@ function DrawingOptions({drawColor, setDrawColor, setDrawMode, setDrawWidth})
                 <div className='drawing-modes' onChange={onModeChange}>
                     <input type="radio" name='mode' value={'brush'} className='brush' defaultChecked/>
                     <input type="radio" name='mode' value={'line'} className='line' />
-                    <input type="radio" name='mode' value={'fill'} className='fill' />
                 </div>
                 <div className='brush-size'>
 

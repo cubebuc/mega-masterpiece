@@ -124,13 +124,6 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
     
             socket.emit('startDrawing', pos);
         }
-        else if(drawMode === 'fill')
-        {
-            let imageData = contextRef.current.getImageData(0, 0, 800, 600);
-            floodFill(imageData, pos.x, pos.y, hexToRgb(drawColor));
-            contextRef.current.putImageData(imageData, 0, 0);
-
-        }
     }
 
     function onMouseUp(e)
@@ -169,64 +162,6 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         const y = e.clientY - e.target.offsetTop;
         let pos = {x: x, y: y};
         return pos;
-    }
-    
-    function floodFill(imageData, x, y, color)
-    {
-        let basePixel = getPixel(imageData, x, y);
-        if(colorsMatch(basePixel, getPixel(imageData, x, y - 1)))
-        {
-            setPixel(imageData, x, y - 1, color);
-            floodFill(imageData, x, y - 1, color);
-        }
-        if(colorsMatch(basePixel, getPixel(imageData, x, y + 1)))
-        {
-            setPixel(imageData, x, y + 1, color);
-            floodFill(imageData, x, y + 1, color);
-        }
-        if(colorsMatch(basePixel, getPixel(imageData, x - 1, y)))
-        {
-            setPixel(imageData, x - 1, y, color);
-            floodFill(imageData, x - 1, y, color);
-        }
-        if(colorsMatch(basePixel, getPixel(imageData, x + 1, y)))
-        {
-            setPixel(imageData, x + 1, y, color);
-            floodFill(imageData, x + 1, y, color);
-        }
-    }
-
-    function getPixel(imageData, x, y)
-    {
-        if (x < 0 || y < 0 || x >= imageData.width || y >= imageData.height) 
-        {
-            return [-1, -1, -1, -1];
-        }
-        else
-        {
-            const offset = (y * imageData.width + x) * 4;
-            return imageData.data.slice(offset, offset + 4);
-        }
-    }
-    
-    function setPixel(imageData, x, y, color) 
-    {
-        const offset = (y * imageData.width + x) * 4;
-        imageData.data[offset] = color[0];
-        imageData.data[offset + 1] = color[1];
-        imageData.data[offset + 2] = color[2];
-        imageData.data[offset + 3] = color[0];
-    }
-    
-    function colorsMatch(a, b)
-    {
-        return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3];
-    }
-
-    function hexToRgb(hex) 
-    {
-        let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : null;
     }
 
     function startDrawing(pos)
