@@ -111,6 +111,14 @@ io.on('connection', (socket) =>
         }
     }
 
+    function colorChanged(color)
+    {
+        if(isOnTurn())
+        {
+            otherEmit('colorChanged', color);
+        }
+    }
+
     function pictureDataRequested(socketId)
     {
         otherEmit('pictureDataRequested', socketId);
@@ -215,6 +223,7 @@ io.on('connection', (socket) =>
     socket.on('joinGame', joinGame);
     socket.on('draw', draw);
     socket.on('startDrawing', startDrawing);
+    socket.on('colorChanged', colorChanged);
     socket.on('pictureDataRequested', pictureDataRequested);
     socket.on('pictureDataSent', pictureDataSent);
     socket.on('messageSent', messageSent);

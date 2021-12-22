@@ -30,6 +30,11 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         contextRef.current = context;
         contextRef.current.beginPath();
 
+        function colorChanged(color)
+        {
+            setDrawColor(color);
+        }
+
         function pictureDataRequested(socketId)
         {
             if(isAdmin())
@@ -88,6 +93,7 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
 
         socket.on('startDrawing', startDrawing);
         socket.on('draw', draw);
+        socket.on('colorChanged', colorChanged);
         socket.on('pictureDataRequested', pictureDataRequested);
         socket.on('pictureDataSent', pictureDataSent);
         socket.on('thisPlayerOnTurn', thisPlayerOnTurn);
@@ -97,6 +103,7 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         {
             socket.off('startDrawing', startDrawing);
             socket.off('draw', draw);
+            socket.off('colorChanged', colorChanged);
             socket.off('pictureDataRequested', pictureDataRequested);
             socket.off('pictureDataSent', pictureDataSent);
             socket.off('thisPlayerOnTurn', thisPlayerOnTurn);
@@ -200,7 +207,7 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
                 </div>
                 <Chat socket={socket} lobby={lobby} />
             </div>
-            <DrawingOptions drawColor={drawColor} setDrawColor={setDrawColor} setDrawMode={setDrawMode} setDrawWidth={setDrawWidth} />
+            <DrawingOptions socket={socket} isOnTurn={isOnTurn} drawColor={drawColor} setDrawColor={setDrawColor} setDrawMode={setDrawMode} setDrawWidth={setDrawWidth} />
         </div>
     );
 }
