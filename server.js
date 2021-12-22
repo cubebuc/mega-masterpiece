@@ -86,7 +86,6 @@ io.on('connection', (socket) =>
         {
             let lobby = getLobby();
             lobby.inGame = true;
-            lobby.players[0].onTurn = true;
             
             let index = randomInt(lobby.words.length);
             lobby.currentWord = lobby.words[index];
@@ -116,6 +115,22 @@ io.on('connection', (socket) =>
         if(isOnTurn())
         {
             otherEmit('colorChanged', color);
+        }
+    }
+
+    function widthChanged(width)
+    {
+        if(isOnTurn())
+        {
+            otherEmit('widthChanged', width);
+        }
+    }
+
+    function clearCanvas()
+    {
+        if(isOnTurn())
+        {
+            otherEmit('clearCanvas');
         }
     }
 
@@ -224,6 +239,8 @@ io.on('connection', (socket) =>
     socket.on('draw', draw);
     socket.on('startDrawing', startDrawing);
     socket.on('colorChanged', colorChanged);
+    socket.on('clearCanvas', clearCanvas);
+    socket.on('widthChanged', widthChanged);
     socket.on('pictureDataRequested', pictureDataRequested);
     socket.on('pictureDataSent', pictureDataSent);
     socket.on('messageSent', messageSent);

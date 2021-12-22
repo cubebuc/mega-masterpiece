@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PlayerList from '../PlayerList';
 import Chat from './Chat/Chat';
-import DrawingOptions from './Options/DrawingOptions';
+import DrawingOptions from './DrawingOptions/DrawingOptions';
 import './Game.scss'
 
 function Game({socket, lobby, setLobby, isAdmin, isOnTurn}) 
@@ -27,20 +27,30 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         context.lineJoin = 'round';
         context.strokeStyle = drawColor;
         context.lineWidth = drawWidth;
+        context.beginPath();
         contextRef.current = context;
-        contextRef.current.beginPath();
 
         function colorChanged(color)
         {
             setDrawColor(color);
         }
 
+        function widthChanged(width)
+        {
+            setDrawWidth(width);
+        }
+
+        function clearCanvas()
+        {
+            context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        }
+
         function pictureDataRequested(socketId)
         {
             if(isAdmin())
             {
-                let bufferT = contextRef.current.getImageData(0, 0, 800, 300).data.buffer;
-                let bufferB = contextRef.current.getImageData(0, 300, 800, 300).data.buffer;
+                let bufferT = context.getImageData(0, 0, 800, 300).data.buffer;
+                let bufferB = context.getImageData(0, 300, 800, 300).data.buffer;
                 let arrayT = new Uint8ClampedArray(bufferT);
                 let arrayB = new Uint8ClampedArray(bufferB);
                 let array = [arrayT, arrayB];
@@ -55,8 +65,8 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             let arrayB = new Uint8ClampedArray(data[1]);
             let imageT = new ImageData(arrayT, 800, 300);
             let imageB = new ImageData(arrayB, 800, 300);
-            contextRef.current.putImageData(imageT, 0, 0);
-            contextRef.current.putImageData(imageB, 0, 300);
+            context.putImageData(imageT, 0, 0);
+            context.putImageData(imageB, 0, 300);
         }
 
         function thisPlayerOnTurn(word)
@@ -94,6 +104,8 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         socket.on('startDrawing', startDrawing);
         socket.on('draw', draw);
         socket.on('colorChanged', colorChanged);
+        socket.on('widthChanged', widthChanged);
+        socket.on('clearCanvas', clearCanvas);
         socket.on('pictureDataRequested', pictureDataRequested);
         socket.on('pictureDataSent', pictureDataSent);
         socket.on('thisPlayerOnTurn', thisPlayerOnTurn);
@@ -104,6 +116,8 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             socket.off('startDrawing', startDrawing);
             socket.off('draw', draw);
             socket.off('colorChanged', colorChanged);
+            socket.off('widthChanged', widthChanged);
+            socket.off('clearCanvas', clearCanvas);
             socket.off('pictureDataRequested', pictureDataRequested);
             socket.off('pictureDataSent', pictureDataSent);
             socket.off('thisPlayerOnTurn', thisPlayerOnTurn);
@@ -165,9 +179,14 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
 
     function getMousePos(e)
     {
-        const x = e.clientX - e.target.offsetLeft;
-        const y = e.clientY - e.target.offsetTop;
+        let rect = canvasRef.current.getBoundingClientRect();
+        let borderLeft = getComputedStyle(canvasRef.current).borderLeftWidth;
+        let borderTop = getComputedStyle(canvasRef.current).borderTopWidth;
+
+        const x = e.clientX - rect.left - borderLeft.substring(0, borderLeft.length - 2);
+        const y = e.clientY - rect.top - borderTop.substring(0, borderTop.length - 2);
         let pos = {x: x, y: y};
+
         return pos;
     }
 
@@ -203,11 +222,11 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
                     <div className={'overlay' + overlayActive}>
                         {overlayContent}
                     </div>
-                    <canvas width='800' height='600' style={{backgroundColor: 'lightgray'}} ref={canvasRef} onMouseDown={onMouseDown} onMouseUp={onMouseUp} onMouseMove={onMouseMove} />
+                    <canvas width='800' height='600' ref={canvasRef} onMouseDown={onMouseDown} onMouseUp={onMouseUp} onMouseMove={onMouseMove} />
                 </div>
                 <Chat socket={socket} lobby={lobby} />
             </div>
-            <DrawingOptions socket={socket} isOnTurn={isOnTurn} drawColor={drawColor} setDrawColor={setDrawColor} setDrawMode={setDrawMode} setDrawWidth={setDrawWidth} />
+            <DrawingOptions socket={socket} isOnTurn={isOnTurn} canvasRef={canvasRef} contextRef={contextRef} drawColor={drawColor} setDrawColor={setDrawColor} setDrawMode={setDrawMode} setDrawWidth={setDrawWidth} />
         </div>
     );
 }

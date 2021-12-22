@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-function Options({socket, lobby, isAdmin}) 
+function LobbyOptions({socket, lobby, isAdmin}) 
 {
     const [rounds, setRounds] = useState(lobby.rounds);
     const [time, setTime] = useState(lobby.time);
@@ -37,27 +37,36 @@ function Options({socket, lobby, isAdmin})
 
     function onRoundsSelectChange(e)
     {
-        let newRounds = e.target.value;
-        setRounds(newRounds);
-        socket.emit('roundsChanged', newRounds);
+        if(isAdmin())
+        {
+            let newRounds = e.target.value;
+            setRounds(newRounds);
+            socket.emit('roundsChanged', newRounds);
+        }
     }
 
     function onTimeSelectChange(e)
     {
-        let newTime = e.target.value;
-        setTime(newTime);
-        socket.emit('timeChanged', newTime);
+        if(isAdmin())
+        {
+            let newTime = e.target.value;
+            setTime(newTime);
+            socket.emit('timeChanged', newTime);
+        }
     }
 
     function onWordsTextAreaChange(e)
     {
-        let newWords = (e.target.value).split(',');
-        setWords(newWords);
-        socket.emit('wordsChanged', newWords);
+        if(isAdmin())
+        {
+            let newWords = (e.target.value).split(',');
+            setWords(newWords);
+            socket.emit('wordsChanged', newWords);
+        }
     }
 
     return (
-        <div className="Options">
+        <div className="LobbyOptions">
             <label htmlFor="rounds">Rounds</label>
             <select className="rounds" name="rounds" disabled={!isAdmin()} value={rounds} onChange={onRoundsSelectChange}>
                 <option value="1">1</option>
@@ -98,4 +107,4 @@ function Options({socket, lobby, isAdmin})
     )
 }
 
-export default Options;
+export default LobbyOptions;

@@ -35,4 +35,23 @@
             margin-right: 0;
         }
     }
+
+    .brush-size {
+        * {
+            width: 60px;
+            height: 60px;
+            margin-right: 2px;
+        }
+
+        :last-child {
+            margin-right: 0;
+        }
+    }
+
+    .clear-canvas {
+        * {
+            width: 60px;
+            height: 60px;
+        }
+    }
 }
