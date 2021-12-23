@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-function LobbyOptions({socket, lobby, isAdmin}) 
-{
-    const [rounds, setRounds] = useState(lobby.rounds);
-    const [time, setTime] = useState(lobby.time);
-    const [words, setWords] = useState(lobby.words);
-    
+function LobbyOptions({socket, lobby, setLobby, isAdmin}) 
+{    
     useEffect(() => 
     {
         function roundsChanged(rounds)
@@ -33,7 +29,7 @@ function LobbyOptions({socket, lobby, isAdmin})
             socket.off('timeChanged', timeChanged);
             socket.off('wordsChanged', wordsChanged);
         }
-    }, [socket]);
+    }, [socket, lobby]);
 
     function onRoundsSelectChange(e)
     {
@@ -41,6 +37,7 @@ function LobbyOptions({socket, lobby, isAdmin})
         {
             let newRounds = e.target.value;
             setRounds(newRounds);
+
             socket.emit('roundsChanged', newRounds);
         }
     }
@@ -51,6 +48,7 @@ function LobbyOptions({socket, lobby, isAdmin})
         {
             let newTime = e.target.value;
             setTime(newTime);
+
             socket.emit('timeChanged', newTime);
         }
     }
@@ -61,14 +59,36 @@ function LobbyOptions({socket, lobby, isAdmin})
         {
             let newWords = (e.target.value).split(',');
             setWords(newWords);
+
             socket.emit('wordsChanged', newWords);
         }
+    }
+
+    function setRounds(rounds)
+    {
+        let newLobby = JSON.parse(JSON.stringify(lobby));
+        newLobby.rounds = rounds;
+        setLobby(newLobby);
+    }
+
+    function setTime(time)
+    {
+        let newLobby = JSON.parse(JSON.stringify(lobby));
+        newLobby.time = time;
+        setLobby(newLobby);
+    }
+
+    function setWords(words)
+    {
+        let newLobby = JSON.parse(JSON.stringify(lobby));
+        newLobby.words = words;
+        setLobby(newLobby);
     }
 
     return (
         <div className="LobbyOptions">
             <label htmlFor="rounds">Rounds</label>
-            <select className="rounds" name="rounds" disabled={!isAdmin()} value={rounds} onChange={onRoundsSelectChange}>
+            <select className="rounds" name="rounds" disabled={!isAdmin()} value={lobby.rounds} onChange={onRoundsSelectChange}>
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -81,7 +101,7 @@ function LobbyOptions({socket, lobby, isAdmin})
                 <option value="10">10</option>
             </select>
             <label htmlFor="time">Drawing time (seconds)</label>
-            <select className="time" name="time" disabled={!isAdmin()} value={time} onChange={onTimeSelectChange}>
+            <select className="time" name="time" disabled={!isAdmin()} value={lobby.time} onChange={onTimeSelectChange}>
                 <option value="10">10</option>
                 <option value="20">20</option>
                 <option value="30">30</option>
@@ -102,7 +122,7 @@ function LobbyOptions({socket, lobby, isAdmin})
                 <option value="180">180</option>
             </select>
             <label htmlFor="words">Words</label>
-            <textarea className="words" value={words.join(',')} onChange={onWordsTextAreaChange} disabled={!isAdmin()}></textarea>
+            <textarea className="words" value={lobby.words.join(',')} onChange={onWordsTextAreaChange} disabled={!isAdmin()}></textarea>
         </div>
     )
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import './Chat.scss'
 
-function Chat({socket, lobby}) 
+function Chat({socket, lobby, setLobby}) 
 {
     const [messages, setMessages] = useState([]);
 
@@ -15,10 +15,11 @@ function Chat({socket, lobby})
 
         function playerGuessed(socketId)
         {
-            let player = lobby.players.find(p => p.id === socketId);
-            console.log(player);
-            player.guessed = true;
-            setMessages([...messages, {sender: 'Player ' + player.nickname, value: 'guessed the word!'}]);
+            let newLobby = JSON.parse(JSON.stringify(lobby));
+            let index = newLobby.players.findIndex(player => player.id === socketId);
+            newLobby.players[index].guessed = true;
+            setLobby(newLobby);
+            setMessages([...messages, {sender: 'Player ' + lobby.players[index].nickname, value: 'guessed the word!'}]);
         }
 
         socket.on('messageSent', messageSent);

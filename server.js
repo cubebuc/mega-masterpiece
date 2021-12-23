@@ -179,7 +179,7 @@ io.on('connection', (socket) =>
         let lobby = lobbies.find(l => l.id === data.lobbyId)
         if(!lobby)
         {
-            lobby = {id: socket.id.substr(0, 16), inGame: false, players: [], rounds: "5", time: "90", words: ['Kočka', 'Pes', 'Žirafa', 'Slon', 'Ptakopysk', 'Lemur'], currentWord: ""};
+            lobby = {id: socket.id.substring(0, 16), inGame: false, players: [], rounds: "5", time: "90", words: ['Kočka Pes', 'Žirafa Slon', 'Ptakopysk Lemur'], currentWord: ""};
             lobbies.push(lobby);
         }
 
@@ -210,11 +210,15 @@ io.on('connection', (socket) =>
         let wordIndex = randomInt(0, lobby.words.length);
         let player = lobby.players[playerIndex];
         player.onTurn = true;
+        player.guessed = true;
         lobby.currentWord = lobby.words[wordIndex];
         console.log('--------------\nOn turn: ' + player.nickname + '\nWith word: ' + lobby.currentWord);
         
+        let wordShape = lobby.currentWord.replace(/[^\s]/g, '_');
+        console.log(wordShape);
+
         io.to(player.id).emit('thisPlayerOnTurn', lobby.currentWord);
-        io.to(getLobbyRoom()).except(player.id).emit('otherPlayerOnTurn', [playerIndex, lobby.currentWord.length]);
+        io.to(getLobbyRoom()).except(player.id).emit('otherPlayerOnTurn', [playerIndex, wordShape]);
     }
     
     function disconnecting()

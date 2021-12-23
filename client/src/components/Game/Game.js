@@ -6,12 +6,11 @@ import './Game.scss'
 
 function Game({socket, lobby, setLobby, isAdmin, isOnTurn}) 
 {
-    const [currentWordLength, setCurrentWordLength] = useState(0);
     const [overlayContent, setOverlayContent] = useState('');
     const [overlayActive, setOverlayActive] = useState('');
-    const [time, setTime] = useState('Time: X');
+    const [time, setTime] = useState(0);
     const [word, setWord] = useState('');
-    const [rounds, setRounds] = useState('Rounds: X/X');
+    const [round, setRound] = useState(0);
 
     const [drawColor, setDrawColor] = useState('#000000');
     const [drawMode, setDrawMode] = useState('brush');
@@ -71,32 +70,48 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
 
         function thisPlayerOnTurn(word)
         {
+            startRound();
             lobby.players.find(p => p.id === socket.id).onTurn = true;
             lobby.currentWord = word;
 
             setWord(word);
             setOverlayContent(<p>YOU WILL BE DRAWING<br/>{word}</p>);
-            setOverlayActive(' active');
-            setTimeout(() => {
-                setOverlayActive('');
-            }, 6000);
 
             console.log('--------------\nOn turn: THIS PLAYER\nWith word: ' + word);
         }
 
         function otherPlayerOnTurn(data)
         {
+            startRound();
             lobby.players[data[0]].onTurn = true;
-            setCurrentWordLength(data[1]);
 
-            setWord(Array(data[1] + 1).join('_ '));
+            setWord(data[1]);
             setOverlayContent(<p>NEXT WILL BE DRAWING<br/>{lobby.players[data[0]].nickname}</p>);
+
+            console.log('--------------\nOn turn: ' + lobby.players[data[0]].nickname + '\nWith word shape: ' + data[1]);
+        }
+
+        function startRound()
+        {
+            lobby.players.forEach(player => player.onTurn = false);
+            setTime(lobby.time);
             setOverlayActive(' active');
             setTimeout(() => {
                 setOverlayActive('');
+                let timeCounter = lobby.time;
+                let loop = setInterval(() => {
+                    if(timeCounter > 0)
+                    {
+                        setTime(timeCounter);
+                        timeCounter--;
+                    }
+                    else
+                    {
+                        socket.emit('nextTurn');
+                        clearInterval(loop);
+                    }
+                }, 1000);
             }, 6000);
-
-            console.log('--------------\nOn turn: ' + lobby.players[data[0]].nickname + '\nWith word length: ' + data[1]);
         }
 
         socket.emit('pictureDataRequested', socket.id);
@@ -123,7 +138,7 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             socket.off('thisPlayerOnTurn', thisPlayerOnTurn);
             socket.off('otherPlayerOnTurn', otherPlayerOnTurn);
         }
-    }, [socket, lobby, isAdmin, currentWordLength, drawColor, drawMode, drawWidth]);
+    }, [socket, lobby, isAdmin, time, setTime, drawColor, drawMode, drawWidth]);
 
     function onMouseDown(e)
     {
@@ -138,6 +153,7 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             draw(pos);
     
             socket.emit('startDrawing', pos);
+            socket.emit('draw', pos);
         }
         else if(drawMode === 'line')
         {
@@ -207,13 +223,13 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             <h1>Game</h1>
             <div className='info'>
                 <div className='time'>
-                    <p>{time}</p>
+                    <p>Time: {time}</p>
                 </div>
                 <div className='word'>
                     <p>{word}</p>
                 </div>
                 <div className='rounds'>
-                    <p>{rounds}</p>
+                    <p>Round: {round}/{lobby.rounds}</p>
                 </div>
             </div>
             <div className='players-game-chat'>
@@ -224,7 +240,7 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
                     </div>
                     <canvas width='800' height='600' ref={canvasRef} onMouseDown={onMouseDown} onMouseUp={onMouseUp} onMouseMove={onMouseMove} />
                 </div>
-                <Chat socket={socket} lobby={lobby} />
+                <Chat socket={socket} lobby={lobby} setLobby={setLobby} />
             </div>
             <DrawingOptions socket={socket} isOnTurn={isOnTurn} canvasRef={canvasRef} contextRef={contextRef} drawColor={drawColor} setDrawColor={setDrawColor} setDrawMode={setDrawMode} setDrawWidth={setDrawWidth} />
         </div>

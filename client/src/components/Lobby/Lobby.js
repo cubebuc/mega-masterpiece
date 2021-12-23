@@ -30,7 +30,7 @@ function Lobby({setAppView, socket, lobby, setLobby, isAdmin})
             <h1>Lobby</h1>
             <strong>{window.location.protocol}//{window.location.host}/?{lobby.id}</strong>
             <div className='options-players'>
-                <LobbyOptions socket={socket} lobby={lobby} isAdmin={isAdmin} />
+                <LobbyOptions socket={socket} lobby={lobby} setLobby={setLobby} isAdmin={isAdmin} />
                 <div className='players'>
                     <label htmlFor='player-list'>Players</label>
                     <PlayerList id='player-list' socket={socket} lobby={lobby} setLobby={setLobby} />

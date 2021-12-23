@@ -1,4 +1,4 @@
-echo off
+@echo off
 start /min "mega-masterpiece" cmd /k "start /min startBackend.bat & start /min startFrontend.bat"
 echo -------------------------------------
 echo             App running
