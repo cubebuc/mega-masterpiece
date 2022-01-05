@@ -172,6 +172,11 @@ io.on('connection', (socket) =>
         }
         
         otherEmit('messageSent', message);
+
+        if(!lobby.players.some(p => !p.guessed))
+        {
+            nextTurn();
+        }
     }
 
     function join(data)
