@@ -1,12 +1,22 @@
-const { randomInt } = require('crypto');
+const express = require('express');
+const app = express();
 const http = require('http');
 const { Server } = require('socket.io');
-
-const PORT = process.env.PORT || 5000;
+const { randomInt } = require('crypto');
+const path = require('path')
 
 let lobbies = [];
 
-const server = http.createServer();
+const PORT = process.env.PORT || 5000;
+const server = http.createServer(app);
+
+app.use(express.static(path.join(__dirname, 'client', 'build')));
+
+app.get('/', function(req, res) 
+{
+    res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+});
+
 const io = new Server(server, 
 {
     cors: 
