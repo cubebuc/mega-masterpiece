@@ -8,7 +8,7 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
 {
     const [overlayContent, setOverlayContent] = useState('');
     const [overlayActive, setOverlayActive] = useState('');
-    const [time, setTime] = useState(0);
+    const [time, setTime] = useState(lobby.time);
     const [word, setWord] = useState('');
     const [round, setRound] = useState(0);
 
@@ -18,6 +18,19 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
 
     const canvasRef = useRef(null);
     const contextRef = useRef(null);
+
+    const timeCounter = useRef(-1);
+
+    useEffect(() =>
+    {
+        setInterval(() => {
+            if(timeCounter.current >= 0)
+            {
+                setTime(timeCounter.current);
+                timeCounter.current--;
+            }
+        }, 1000);
+    }, []);
 
     useEffect(() =>
     {
@@ -70,48 +83,38 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
 
         function thisPlayerOnTurn(word)
         {
-            startRound();
+            startTurn();
             lobby.players.find(p => p.id === socket.id).onTurn = true;
             lobby.currentWord = word;
 
             setWord(word);
             setOverlayContent(<p>YOU WILL BE DRAWING<br/>{word}</p>);
-
-            console.log('--------------\nOn turn: THIS PLAYER\nWith word: ' + word);
         }
 
         function otherPlayerOnTurn(data)
         {
-            startRound();
+            startTurn();
             lobby.players[data[0]].onTurn = true;
 
             setWord(data[1]);
             setOverlayContent(<p>NEXT WILL BE DRAWING<br/>{lobby.players[data[0]].nickname}</p>);
-
-            console.log('--------------\nOn turn: ' + lobby.players[data[0]].nickname + '\nWith word shape: ' + data[1]);
         }
 
-        function startRound()
+        function startTurn()
         {
             lobby.players.forEach(player => player.onTurn = false);
+            lobby.players.forEach(player => player.guessed = false);
+
+            timeCounter.current = -1;
             setTime(lobby.time);
+            setRound(round + 1);
             setOverlayActive(' active');
+            clearCanvas();
+
             setTimeout(() => {
                 setOverlayActive('');
-                let timeCounter = lobby.time;
-                let loop = setInterval(() => {
-                    if(timeCounter > 0)
-                    {
-                        setTime(timeCounter);
-                        timeCounter--;
-                    }
-                    else
-                    {
-                        socket.emit('nextTurn');
-                        clearInterval(loop);
-                    }
-                }, 1000);
-            }, 6000);
+                timeCounter.current = lobby.time;
+            }, 2000);
         }
 
         socket.emit('pictureDataRequested', socket.id);

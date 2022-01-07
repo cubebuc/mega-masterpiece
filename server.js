@@ -165,18 +165,18 @@ io.on('connection', (socket) =>
         }
         else if(message.value.toUpperCase() == lobby.currentWord.toUpperCase())
         {
-            console.log(lobby.players.find(p => p.id === socket.id).guessed);
             player.guessed = true;
             roomEmit('playerGuessed', socket.id);
+
+            if(!lobby.players.some(p => !p.guessed))
+            {
+                nextTurn();
+            }
+
             return;
         }
         
         otherEmit('messageSent', message);
-
-        if(!lobby.players.some(p => !p.guessed))
-        {
-            nextTurn();
-        }
     }
 
     function join(data)
@@ -211,6 +211,13 @@ io.on('connection', (socket) =>
     function nextTurn()
     {
         let lobby = getLobby();
+        for(let p of lobby.players)
+        {
+            p.onTurn = false;
+            p.guessed = false;
+        }
+        clearTimeout(lobby.timeout);
+
         let playerIndex = randomInt(0, lobby.players.length);
         let wordIndex = randomInt(0, lobby.words.length);
         let player = lobby.players[playerIndex];
@@ -224,6 +231,11 @@ io.on('connection', (socket) =>
 
         io.to(player.id).emit('thisPlayerOnTurn', lobby.currentWord);
         io.to(getLobbyRoom()).except(player.id).emit('otherPlayerOnTurn', [playerIndex, wordShape]);
+    
+        lobby.timeout = setTimeout(() => 
+        {
+            nextTurn();
+        }, lobby.time * 1000 + 4000);
     }
     
     function disconnecting()
