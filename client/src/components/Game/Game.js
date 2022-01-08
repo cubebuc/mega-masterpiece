@@ -23,6 +23,8 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
 
     useEffect(() =>
     {
+        socket.emit('pictureDataRequested', socket.id);
+        
         setInterval(() => {
             if(timeCounter.current >= 0)
             {
@@ -116,8 +118,6 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
                 timeCounter.current = lobby.time;
             }, 2000);
         }
-
-        socket.emit('pictureDataRequested', socket.id);
 
         socket.on('startDrawing', startDrawing);
         socket.on('draw', draw);
