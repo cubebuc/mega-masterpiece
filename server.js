@@ -249,6 +249,8 @@ io.on('connection', (socket) =>
         lobby.players.splice(playerIndex, 1);
         if(lobby.players.length == 0)
         {
+            clearTimeout(lobby.timeout);
+
             let lobbyIndex = lobbies.indexOf(lobby);
             lobbies.splice(lobbyIndex, 1);
         }
