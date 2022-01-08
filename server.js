@@ -154,7 +154,7 @@ io.on('connection', (socket) =>
     function messageSent(message)
     {
         let lobby = getLobby();
-        console.log('Message: ' + message.value.toUpperCase().normalize() + '  Word: ' + lobby.currentWord.toUpperCase().normalize() + '  Guessed? - ' + (message.value.toUpperCase().normalize() === lobby.currentWord.toUpperCase().normalize()));
+        console.log('Message: ' + message.value.trim().toUpperCase().normalize() + '  Word: ' + lobby.currentWord.trim().toUpperCase().normalize() + '  Guessed? - ' + (message.value.trim().toUpperCase().normalize() === lobby.currentWord.trim().toUpperCase().normalize()));
         let player = lobby.players.find(p => p.id === socket.id);
         if(player.guessed)
         {
@@ -167,7 +167,7 @@ io.on('connection', (socket) =>
             }
             return;
         }
-        else if(message.value.toUpperCase().normalize() === lobby.currentWord.toUpperCase().normalize())
+        else if(message.value.trim().toUpperCase().normalize() === lobby.currentWord.trim().toUpperCase().normalize())
         {
             console.log('Player guessed the word');
             player.guessed = true;
