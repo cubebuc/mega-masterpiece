@@ -228,10 +228,8 @@ io.on('connection', (socket) =>
         player.onTurn = true;
         player.guessed = true;
         lobby.currentWord = lobby.words[wordIndex];
-        console.log('--------------\nOn turn: ' + player.nickname + '\nWith word: ' + lobby.currentWord);
-        
+
         let wordShape = lobby.currentWord.replace(/[^\s]/g, '_');
-        console.log(wordShape);
 
         io.to(player.id).emit('thisPlayerOnTurn', lobby.currentWord);
         io.to(getLobbyRoom()).except(player.id).emit('otherPlayerOnTurn', [playerIndex, wordShape]);

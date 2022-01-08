@@ -13,7 +13,7 @@ function App()
 
   useEffect(() => 
   {
-    const newSocket = io('https://mega-masterpiece.herokuapp.com/');
+    const newSocket = io();
     setSocket(newSocket);
 
     return () => 
