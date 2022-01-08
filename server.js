@@ -153,8 +153,8 @@ io.on('connection', (socket) =>
 
     function messageSent(message)
     {
-        console.log('Message recieved: ' + message);
         let lobby = getLobby();
+        console.log('Message: ' + message.value + '  Word: ' + lobby.currentWord);
         let player = lobby.players.find(p => p.id === socket.id);
         if(player.guessed)
         {
