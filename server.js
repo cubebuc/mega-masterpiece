@@ -141,6 +141,7 @@ io.on('connection', (socket) =>
     function pictureDataRequested(socketId)
     {
         otherEmit('pictureDataRequested', socketId);
+        console.log("SOMEONE REQUESTED PICTURE DATA - " + socketId);
     }
 
     function pictureDataSent(data)
