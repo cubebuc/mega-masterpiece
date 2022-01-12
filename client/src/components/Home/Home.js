@@ -9,8 +9,8 @@ function Home({setAppView, socket, setLobby})
     {
         function join(lobby)
         {
-            setLobby(lobby);
-            if(lobby.inGame)
+            setLobby(JSON.parse(lobby));
+            if(JSON.parse(lobby).inGame)
                 setAppView('game');
             else
                 setAppView('lobby');

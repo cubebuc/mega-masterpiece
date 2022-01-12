@@ -24,7 +24,14 @@ function App()
 
   useEffect(() =>
   {
-    function playerDisconnecting(id)
+    function playerJoined(player)
+    {
+      let newLobby = JSON.parse(JSON.stringify(lobby));
+      newLobby.players.push(player);
+      setLobby(newLobby);
+    }
+
+    function playerDisconnected(id)
     {
       let newLobby = JSON.parse(JSON.stringify(lobby));
       let index = newLobby.players.findIndex(player => player.id === id);
@@ -33,14 +40,20 @@ function App()
     }
 
     if(socket)
-      socket.on('playerDisconnecting', playerDisconnecting);
+    {
+      socket.on('playerJoined', playerJoined);
+      socket.on('playerDisconnected', playerDisconnected);
+    }
 
     return () => 
     {
       if(socket)
-        socket.off('playerDisconnecting', playerDisconnecting);
+      {
+        socket.off('playerJoined', playerJoined);
+        socket.off('playerDisconnected', playerDisconnected);
+      }
     }
-  }, [socket, lobby]);
+  }, [socket, lobby, setLobby]);
 
   function isAdmin()
   {

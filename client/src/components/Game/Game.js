@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import PlayerList from '../PlayerList';
 import Chat from './Chat/Chat';
 import DrawingOptions from './DrawingOptions/DrawingOptions';
 import './Game.scss'
@@ -23,7 +22,7 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
 
     useEffect(() =>
     {
-        socket.emit('pictureDataRequested', socket.id);
+        socket.emit('turnDataRequested', socket.id);
         
         setInterval(() => {
             if(timeCounter.current >= 0)
@@ -59,7 +58,7 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         }
 
-        function pictureDataRequested(socketId)
+        function turnDataRequested(socketId)
         {
             if(isAdmin())
             {
@@ -68,15 +67,17 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
                 let arrayT = new Uint8ClampedArray(bufferT);
                 let arrayB = new Uint8ClampedArray(bufferB);
                 let array = [arrayT, arrayB];
-                let data = {socketId: socketId, pictureData: array};
-                socket.emit('pictureDataSent', data);
+                let data = {socketId: socketId, time: time, pictureData: array};
+                socket.emit('turnDataSent', data);
             }
         }
 
-        function pictureDataSent(data)
+        function turnDataSent(data)
         {
-            let arrayT = new Uint8ClampedArray(data[0]);
-            let arrayB = new Uint8ClampedArray(data[1]);
+            setTime(data.time - 1);
+            timeCounter.current = data.time - 1;
+            let arrayT = new Uint8ClampedArray(data.pictureData[0]);
+            let arrayB = new Uint8ClampedArray(data.pictureData[1]);
             let imageT = new ImageData(arrayT, 800, 300);
             let imageB = new ImageData(arrayB, 800, 300);
             context.putImageData(imageT, 0, 0);
@@ -86,8 +87,10 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         function thisPlayerOnTurn(word)
         {
             startTurn();
-            lobby.players.find(p => p.id === socket.id).onTurn = true;
-            lobby.currentWord = word;
+
+            let newLobby = JSON.parse(JSON.stringify(lobby));
+            newLobby.players.find(p => p.id === socket.id).onTurn = true;
+            setLobby(newLobby);
 
             setWord(word);
             setOverlayContent(<p>YOU WILL BE DRAWING<br/>{word}</p>);
@@ -96,7 +99,10 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         function otherPlayerOnTurn(data)
         {
             startTurn();
-            lobby.players[data[0]].onTurn = true;
+            
+            let newLobby = JSON.parse(JSON.stringify(lobby));
+            newLobby.players[data[0]].onTurn = true;
+            setLobby(newLobby);
 
             setWord(data[1]);
             setOverlayContent(<p>NEXT WILL BE DRAWING<br/>{lobby.players[data[0]].nickname}</p>);
@@ -104,8 +110,10 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
 
         function startTurn()
         {
-            lobby.players.forEach(player => player.onTurn = false);
-            lobby.players.forEach(player => player.guessed = false);
+            let newLobby = JSON.parse(JSON.stringify(lobby));
+            newLobby.players.forEach(player => player.onTurn = false);
+            newLobby.players.forEach(player => player.guessed = false);
+            setLobby(newLobby);
 
             timeCounter.current = -1;
             setTime(lobby.time);
@@ -124,8 +132,8 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         socket.on('colorChanged', colorChanged);
         socket.on('widthChanged', widthChanged);
         socket.on('clearCanvas', clearCanvas);
-        socket.on('pictureDataRequested', pictureDataRequested);
-        socket.on('pictureDataSent', pictureDataSent);
+        socket.on('turnDataRequested', turnDataRequested);
+        socket.on('turnDataSent', turnDataSent);
         socket.on('thisPlayerOnTurn', thisPlayerOnTurn);
         socket.on('otherPlayerOnTurn', otherPlayerOnTurn);
 
@@ -136,8 +144,8 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             socket.off('colorChanged', colorChanged);
             socket.off('widthChanged', widthChanged);
             socket.off('clearCanvas', clearCanvas);
-            socket.off('pictureDataRequested', pictureDataRequested);
-            socket.off('pictureDataSent', pictureDataSent);
+            socket.off('turnDataRequested', turnDataRequested);
+            socket.off('turnDataSent', turnDataSent);
             socket.off('thisPlayerOnTurn', thisPlayerOnTurn);
             socket.off('otherPlayerOnTurn', otherPlayerOnTurn);
         }
@@ -236,7 +244,9 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
                 </div>
             </div>
             <div className='players-game-chat'>
-                <PlayerList socket={socket} lobby={lobby} setLobby={setLobby} />
+                <div className='player-list'>
+                    {lobby.players.map((player, index) => <p key={index}>{player.nickname}</p>)}
+                </div>
                 <div className='canvas'>
                     <div className={'overlay' + overlayActive}>
                         {overlayContent}

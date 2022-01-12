@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import LobbyOptions from './LobbyOptions';
-import PlayerList from '../PlayerList';
 import './Lobby.scss'
 
 function Lobby({setAppView, socket, lobby, setLobby, isAdmin}) 
@@ -33,7 +32,9 @@ function Lobby({setAppView, socket, lobby, setLobby, isAdmin})
                 <LobbyOptions socket={socket} lobby={lobby} setLobby={setLobby} isAdmin={isAdmin} />
                 <div className='players'>
                     <label htmlFor='player-list'>Players</label>
-                    <PlayerList id='player-list' socket={socket} lobby={lobby} setLobby={setLobby} />
+                    <div className='player-list'>
+                        {lobby.players.map((player, index) => <p key={index}>{player.nickname}</p>)}
+                    </div>
                 </div>
             </div>
             <button onClick={onClick} disabled={!isAdmin()}>Start</button>

@@ -138,23 +138,22 @@ io.on('connection', (socket) =>
         }
     }
 
-    function pictureDataRequested(socketId)
+    function turnDataRequested(socketId)
     {
-        otherEmit('pictureDataRequested', socketId);
+        io.to(getLobby().players[0].id).emit('turnDataRequested', socketId);
     }
 
-    function pictureDataSent(data)
+    function turnDataSent(data)
     {
         if(isAdmin())
         {
-            io.to(data.socketId).emit('pictureDataSent', data.pictureData);
+            io.to(data.socketId).emit('turnDataSent', {time: data.time, pictureData: data.pictureData});
         }
     }
 
     function messageSent(message)
     {
         let lobby = getLobby();
-        console.log('Message: ' + message.value.trim().toUpperCase().normalize() + '  Word: ' + lobby.currentWord.trim().toUpperCase().normalize() + '  Guessed? - ' + (message.value.trim().toUpperCase().normalize() === lobby.currentWord.trim().toUpperCase().normalize()));
         let player = lobby.players.find(p => p.id === socket.id);
         if(player.guessed)
         {
@@ -189,16 +188,18 @@ io.on('connection', (socket) =>
         let lobby = lobbies.find(l => l.id === data.lobbyId)
         if(!lobby)
         {
-            lobby = {id: socket.id.substring(0, 16), inGame: false, players: [], rounds: "5", time: "90", words: ['Kočka Pes', 'Žirafa Slon', 'Ptakopysk Lemur'], currentWord: ""};
+            lobby = {id: socket.id.substring(0, 16), inGame: false, players: [], rounds: "5", currentRound: "1", time: "90", words: ['Kočka Pes', 'Žirafa Slon', 'Ptakopysk Lemur'], currentWord: ""};
             lobbies.push(lobby);
         }
 
         let player = {id: socket.id, nickname: data.nickname, onTurn: false, ready: false, guessed: false};
         lobby.players.push(player);
+        
+        let newLobby = {id: lobby.id, inGame: lobby.inGame, players: lobby.players, rounds: lobby.rounds, currentRound: lobby.currentRound, time: lobby.time, words: lobby.words, currentWord: lobby.currentWord};
 
         io.to(lobby.id).emit('playerJoined', player);
         io.to(socket.id).socketsJoin(lobby.id);
-        io.to(socket.id).emit('join', lobby);
+        io.to(socket.id).emit('join', JSON.stringify(newLobby));
     }
 
     function ready()
@@ -209,6 +210,7 @@ io.on('connection', (socket) =>
 
         if(lobby.players.every(p => p.ready))
         {
+            endTurn();
             nextTurn();
         }
     }
@@ -237,8 +239,14 @@ io.on('connection', (socket) =>
     
         lobby.timeout = setTimeout(() => 
         {
+            endTurn();
             nextTurn();
         }, lobby.time * 1000 + 4000);
+    }
+
+    function endTurn()
+    {
+
     }
     
     function disconnecting()
@@ -255,7 +263,7 @@ io.on('connection', (socket) =>
             let lobbyIndex = lobbies.indexOf(lobby);
             lobbies.splice(lobbyIndex, 1);
         }
-        otherEmit('playerDisconnecting', socket.id);
+        otherEmit('playerDisconnected', socket.id);
     }
 
     socket.on('roundsChanged', roundsChanged);
@@ -267,8 +275,8 @@ io.on('connection', (socket) =>
     socket.on('colorChanged', colorChanged);
     socket.on('clearCanvas', clearCanvas);
     socket.on('widthChanged', widthChanged);
-    socket.on('pictureDataRequested', pictureDataRequested);
-    socket.on('pictureDataSent', pictureDataSent);
+    socket.on('turnDataRequested', turnDataRequested);
+    socket.on('turnDataSent', turnDataSent);
     socket.on('messageSent', messageSent);
     socket.on('join', join);
     socket.on('ready', ready);
