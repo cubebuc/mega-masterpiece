@@ -49,7 +49,7 @@ io.on('connection', (socket) =>
 
     function isAdmin()
     {
-        return getLobby().players[0].id === socket.id;
+        return getLobby() && getLobby().players[0].id === socket.id;
     }
 
     function isOnTurn()
