@@ -98,7 +98,7 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             setWord(data[1]);
 
             if(data[0] == lobby.players.findIndex(player => player.id === socket.id))
-                setOverlayContent(<p>YOU WILL BE DRAWING<br/>{word}</p>);
+                setOverlayContent(<p>YOU WILL BE DRAWING<br/>{data[1]}</p>);
             else
                 setOverlayContent(<p>NEXT WILL BE DRAWING<br/>{lobby.players[data[0]].nickname}</p>);
         }
