@@ -168,7 +168,6 @@ io.on('connection', (socket) =>
         }
         else if(message.value.trim().toUpperCase().normalize() === lobby.currentWord.trim().toUpperCase().normalize())
         {
-            console.log('Player guessed the word');
             player.guessed = true;
             roomEmit('playerGuessed', socket.id);
 
@@ -232,10 +231,8 @@ io.on('connection', (socket) =>
         player.guessed = true;
         lobby.currentWord = lobby.words[wordIndex];
 
-        let wordShape = lobby.currentWord.replace(/[^\s]/g, '_');
-
-        io.to(player.id).emit('thisPlayerOnTurn', lobby.currentWord);
-        io.to(getLobbyRoom()).except(player.id).emit('otherPlayerOnTurn', [playerIndex, wordShape]);
+        io.to(player.id).emit('newPlayerOnTurn', [playerIndex, lobby.currentWord]);
+        io.to(getLobbyRoom()).except(player.id).emit('newPlayerOnTurn', [playerIndex, lobby.currentWord.replace(/[^\s]/g, '_')]);
     
         lobby.timeout = setTimeout(() => 
         {

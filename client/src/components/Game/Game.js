@@ -85,37 +85,26 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             context.putImageData(imageB, 0, 300);
         }
 
-        function thisPlayerOnTurn(word)
+        function newPlayerOnTurn(data)
         {
             startTurn();
 
             let newLobby = JSON.parse(JSON.stringify(lobby));
-            newLobby.players.find(p => p.id === socket.id).onTurn = true;
-            setLobby(newLobby);
-
-            setWord(word);
-            setOverlayContent(<p>YOU WILL BE DRAWING<br/>{word}</p>);
-        }
-
-        function otherPlayerOnTurn(data)
-        {
-            startTurn();
-            
-            let newLobby = JSON.parse(JSON.stringify(lobby));
+            newLobby.players.forEach(player => player.onTurn = false);
+            newLobby.players.forEach(player => player.guessed = false);
             newLobby.players[data[0]].onTurn = true;
             setLobby(newLobby);
-
+            
             setWord(data[1]);
-            setOverlayContent(<p>NEXT WILL BE DRAWING<br/>{lobby.players[data[0]].nickname}</p>);
+
+            if(data[0] == lobby.players.findIndex(player => player.id === socket.id))
+                setOverlayContent(<p>YOU WILL BE DRAWING<br/>{word}</p>);
+            else
+                setOverlayContent(<p>NEXT WILL BE DRAWING<br/>{lobby.players[data[0]].nickname}</p>);
         }
 
         function startTurn()
         {
-            let newLobby = JSON.parse(JSON.stringify(lobby));
-            newLobby.players.forEach(player => player.onTurn = false);
-            newLobby.players.forEach(player => player.guessed = false);
-            setLobby(newLobby);
-
             timeCounter.current = -1;
             setTime(lobby.time);
             setRound(round + 1);
@@ -135,8 +124,7 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         socket.on('clearCanvas', clearCanvas);
         socket.on('turnDataRequested', turnDataRequested);
         socket.on('turnDataSent', turnDataSent);
-        socket.on('thisPlayerOnTurn', thisPlayerOnTurn);
-        socket.on('otherPlayerOnTurn', otherPlayerOnTurn);
+        socket.on('newPlayerOnTurn', newPlayerOnTurn);
 
         return () =>
         {
@@ -147,10 +135,9 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             socket.off('clearCanvas', clearCanvas);
             socket.off('turnDataRequested', turnDataRequested);
             socket.off('turnDataSent', turnDataSent);
-            socket.off('thisPlayerOnTurn', thisPlayerOnTurn);
-            socket.off('otherPlayerOnTurn', otherPlayerOnTurn);
+            socket.off('newPlayerOnTurn', newPlayerOnTurn);
         }
-    }, [socket, lobby, isAdmin, time, setTime, drawColor, drawMode, drawWidth]);
+    }, [socket, lobby, setLobby, isAdmin, time, setTime, drawColor, drawMode, drawWidth]);
 
     function onMouseDown(e)
     {
@@ -246,7 +233,7 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             </div>
             <div className='players-game-chat'>
                 <div className='player-list'>
-                    {lobby.players.map((player, index) => <Player key={index} player={player}/>)}
+                    {lobby.players.map((_player, index) => <Player key={index} lobby={lobby} index={index}/>)}
                 </div>
                 <div className='canvas'>
                     <div className={'overlay' + overlayActive}>
