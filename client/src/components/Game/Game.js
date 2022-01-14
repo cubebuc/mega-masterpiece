@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import Player from './Player'
 import Chat from './Chat/Chat';
 import DrawingOptions from './DrawingOptions/DrawingOptions';
 import './Game.scss'
@@ -245,7 +246,7 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             </div>
             <div className='players-game-chat'>
                 <div className='player-list'>
-                    {lobby.players.map((player, index) => <p key={index}>{player.nickname}</p>)}
+                    {lobby.players.map((player, index) => <Player key={index} player={player}/>)}
                 </div>
                 <div className='canvas'>
                     <div className={'overlay' + overlayActive}>

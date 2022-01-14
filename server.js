@@ -192,7 +192,7 @@ io.on('connection', (socket) =>
             lobbies.push(lobby);
         }
 
-        let player = {id: socket.id, nickname: data.nickname, onTurn: false, ready: false, guessed: false};
+        let player = {id: socket.id, nickname: data.nickname, onTurn: false, ready: false, guessed: false, points: 0};
         lobby.players.push(player);
         
         let newLobby = {id: lobby.id, inGame: lobby.inGame, players: lobby.players, rounds: lobby.rounds, currentRound: lobby.currentRound, time: lobby.time, words: lobby.words, currentWord: lobby.currentWord};

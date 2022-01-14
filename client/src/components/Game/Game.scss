@@ -27,7 +27,14 @@
     }
 
     .player-list {
-        width: 100px;
+        width: 200px;
+
+        .player {
+            margin: 5px;
+            padding: 4px;
+            text-align: center;
+            background-color: rgb(180, 180, 180);
+        }
     }
 
     canvas {
