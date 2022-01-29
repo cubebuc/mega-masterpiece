@@ -28,6 +28,7 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         setInterval(() => {
             if(timeCounter.current >= 0)
             {
+                console.log(timeCounter.current);
                 setTime(timeCounter.current);
                 timeCounter.current--;
             }
@@ -68,15 +69,17 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
                 let arrayT = new Uint8ClampedArray(bufferT);
                 let arrayB = new Uint8ClampedArray(bufferB);
                 let array = [arrayT, arrayB];
-                let data = {socketId: socketId, time: time, pictureData: array};
+                let data = {socketId: socketId, timeCounter: timeCounter.current, pictureData: array};
                 socket.emit('turnDataSent', data);
             }
         }
 
         function turnDataSent(data)
         {
-            setTime(data.time - 1);
-            timeCounter.current = data.time - 1;
+            if(data.timeCounter != -1)
+                setTime(data.timeCounter - 1);
+            timeCounter.current = data.timeCounter - 1;
+
             let arrayT = new Uint8ClampedArray(data.pictureData[0]);
             let arrayB = new Uint8ClampedArray(data.pictureData[1]);
             let imageT = new ImageData(arrayT, 800, 300);

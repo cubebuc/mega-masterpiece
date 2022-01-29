@@ -147,7 +147,7 @@ io.on('connection', (socket) =>
     {
         if(isAdmin())
         {
-            io.to(data.socketId).emit('turnDataSent', {time: data.time, pictureData: data.pictureData});
+            io.to(data.socketId).emit('turnDataSent', {timeCounter: data.timeCounter, pictureData: data.pictureData});
         }
     }
 
