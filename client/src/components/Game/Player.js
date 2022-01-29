@@ -10,7 +10,7 @@ function Player({lobby, index})
     }, [lobby, setPlayer])
 
     return (
-        <div className='Player' style={{backgroundColor: player.onTurn ? 'blue' : player.guessed ? 'green' : 'gray'}}>
+        <div className='Player' style={{backgroundColor: player.onTurn ? '#6ed1ff' : player.guessed ? '#6eff8b' : 'gray'}}>
             <p className='nickname'>{player.nickname}</p>
             <p className="points">{player.points}</p>
         </div>

@@ -5,6 +5,7 @@ const { Server } = require('socket.io');
 const { randomInt } = require('crypto');
 const path = require('path')
 
+const POINTS = [20, 14, 9, 6, 4, 2, 1];
 let lobbies = [];
 
 const PORT = process.env.PORT || 5000;
@@ -12,7 +13,7 @@ const server = http.createServer(app);
 
 app.use(express.static(path.join(__dirname, 'client', 'build')));
 
-app.get('/', function(req, res) 
+app.get('/', function(_req, res) 
 {
     res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
 });
@@ -169,11 +170,15 @@ io.on('connection', (socket) =>
         else if(message.value.trim().toUpperCase().normalize() === lobby.currentWord.trim().toUpperCase().normalize())
         {
             player.guessed = true;
-            roomEmit('playerGuessed', socket.id);
+            let points = POINTS[lobby.playersGuessed.length] || POINTS[POINTS.length - 1]
+            player.points += points;
+            player.pointsThisTurn = points;
+            lobby.playersGuessed.push(player.id);
+            roomEmit('playerGuessed', [socket.id, points]);
 
             if(!lobby.players.some(p => !p.guessed))
             {
-                nextTurn();
+                endTurn();
             }
 
             return;
@@ -187,11 +192,11 @@ io.on('connection', (socket) =>
         let lobby = lobbies.find(l => l.id === data.lobbyId)
         if(!lobby)
         {
-            lobby = {id: socket.id.substring(0, 16), inGame: false, players: [], rounds: "5", currentRound: "1", time: "90", words: ['Kočka Pes', 'Žirafa Slon', 'Ptakopysk Lemur'], currentWord: ""};
+            lobby = {id: socket.id.substring(0, 16), inGame: false, players: [], rounds: "5", currentRound: "1", time: "90", words: ['Kočka Pes', 'Žirafa Slon', 'Ptakopysk Lemur'], currentWord: "", playersGuessed: []};
             lobbies.push(lobby);
         }
 
-        let player = {id: socket.id, nickname: data.nickname, onTurn: false, ready: false, guessed: false, points: 0};
+        let player = {id: socket.id, nickname: data.nickname, onTurn: false, ready: false, guessed: false, points: 0, pointsThisTurn: 0};
         lobby.players.push(player);
         
         let newLobby = {id: lobby.id, inGame: lobby.inGame, players: lobby.players, rounds: lobby.rounds, currentRound: lobby.currentRound, time: lobby.time, words: lobby.words, currentWord: lobby.currentWord};
@@ -217,11 +222,13 @@ io.on('connection', (socket) =>
     function nextTurn()
     {
         let lobby = getLobby();
-        for(let p of lobby.players)
+        lobby.playersGuessed = [];
+        lobby.players.forEach(player =>
         {
-            p.onTurn = false;
-            p.guessed = false;
-        }
+            player.onTurn = false;
+            player.guessed = false;
+            player.pointsThisTurn = 0;
+        });
         clearTimeout(lobby.timeout);
 
         let playerIndex = randomInt(0, lobby.players.length);
@@ -234,7 +241,7 @@ io.on('connection', (socket) =>
         io.to(player.id).emit('newPlayerOnTurn', [playerIndex, lobby.currentWord]);
         io.to(getLobbyRoom()).except(player.id).emit('newPlayerOnTurn', [playerIndex, lobby.currentWord.replace(/[^\s]/g, '_')]);
     
-        let preTurnTimeout = 2000;
+        let preTurnTimeout = 4000;
         lobby.timeout = setTimeout(() =>
         {
             roomEmit('startTurn');
@@ -247,8 +254,16 @@ io.on('connection', (socket) =>
 
     function endTurn()
     {
-        let endTurnTimeout = 2000;
-        nextTurn();
+        let lobby = getLobby();
+        clearTimeout(lobby.timeout);
+
+        roomEmit('endTurn');
+
+        let endTurnTimeout = 4000;
+        lobby.timeout = setTimeout(() => 
+        {
+            nextTurn();
+        }, endTurnTimeout);
     }
     
     function disconnecting()

@@ -12,11 +12,13 @@ function Chat({socket, lobby, setLobby})
             setMessages([...messages, message]);
         }
 
-        function playerGuessed(socketId)
+        function playerGuessed(data)
         {
             let newLobby = JSON.parse(JSON.stringify(lobby));
-            let index = newLobby.players.findIndex(player => player.id === socketId);
+            let index = newLobby.players.findIndex(player => player.id === data[0]);
             newLobby.players[index].guessed = true;
+            newLobby.players[index].points += data[1];
+            newLobby.players[index].pointsThisTurn = data[1];
             setLobby(newLobby);
             setMessages([...messages, {sender: 'Player ' + lobby.players[index].nickname, value: 'guessed the word!'}]);
         }

@@ -7,7 +7,7 @@ import './Game.scss'
 function Game({socket, lobby, setLobby, isAdmin, isOnTurn}) 
 {
     const [overlayContent, setOverlayContent] = useState('');
-    const [overlayActive, setOverlayActive] = useState('');
+    const [overlayActive, setOverlayActive] = useState(' active');
     const [time, setTime] = useState(lobby.time);
     const [word, setWord] = useState('');
     const [round, setRound] = useState(0);
@@ -90,8 +90,12 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         function newPlayerOnTurn(data)
         {
             let newLobby = JSON.parse(JSON.stringify(lobby));
-            newLobby.players.forEach(player => player.onTurn = false);
-            newLobby.players.forEach(player => player.guessed = false);
+            newLobby.players.forEach(player =>
+            {
+                player.onTurn = false;
+                player.guessed = false;
+                player.pointsThisTurn = 0;
+            });
             newLobby.players[data[0]].onTurn = true;
             setLobby(newLobby);
             
@@ -105,7 +109,6 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             {
                 setOverlayContent(<p>NEXT WILL BE DRAWING<br/>{lobby.players[data[0]].nickname}</p>);
             }
-            setOverlayActive(' active');
             
             timeCounter.current = -1;
             setTime(lobby.time);
@@ -121,7 +124,8 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
 
         function endTurn()
         {
-            
+            setOverlayContent(lobby.players.map((player, index) => <p key={index}>{player.nickname}: {player.pointsThisTurn}</p>));
+            setOverlayActive(' active');
         }
 
         socket.on('startDrawing', startDrawing);
