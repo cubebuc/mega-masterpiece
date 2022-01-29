@@ -28,7 +28,6 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         setInterval(() => {
             if(timeCounter.current >= 0)
             {
-                console.log(timeCounter.current);
                 setTime(timeCounter.current);
                 timeCounter.current--;
             }
@@ -90,8 +89,6 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
 
         function newPlayerOnTurn(data)
         {
-            startTurn();
-
             let newLobby = JSON.parse(JSON.stringify(lobby));
             newLobby.players.forEach(player => player.onTurn = false);
             newLobby.players.forEach(player => player.guessed = false);
@@ -101,23 +98,30 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             setWord(data[1]);
 
             if(data[0] == lobby.players.findIndex(player => player.id === socket.id))
+            {
                 setOverlayContent(<p>YOU WILL BE DRAWING<br/>{data[1]}</p>);
+            }
             else
+            {
                 setOverlayContent(<p>NEXT WILL BE DRAWING<br/>{lobby.players[data[0]].nickname}</p>);
+            }
+            setOverlayActive(' active');
+            
+            timeCounter.current = -1;
+            setTime(lobby.time);
+            setRound(round + 1);
+            clearCanvas();
         }
 
         function startTurn()
         {
-            timeCounter.current = -1;
-            setTime(lobby.time);
-            setRound(round + 1);
-            setOverlayActive(' active');
-            clearCanvas();
+            setOverlayActive('');
+            timeCounter.current = lobby.time;
+        }
 
-            setTimeout(() => {
-                setOverlayActive('');
-                timeCounter.current = lobby.time;
-            }, 2000);
+        function endTurn()
+        {
+            
         }
 
         socket.on('startDrawing', startDrawing);
@@ -128,6 +132,8 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         socket.on('turnDataRequested', turnDataRequested);
         socket.on('turnDataSent', turnDataSent);
         socket.on('newPlayerOnTurn', newPlayerOnTurn);
+        socket.on('startTurn', startTurn);
+        socket.on('endTurn', endTurn);
 
         return () =>
         {
@@ -139,6 +145,8 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             socket.off('turnDataRequested', turnDataRequested);
             socket.off('turnDataSent', turnDataSent);
             socket.off('newPlayerOnTurn', newPlayerOnTurn);
+            socket.off('startTurn', startTurn);
+            socket.off('endTurn', endTurn);
         }
     }, [socket, lobby, setLobby, isAdmin, time, setTime, drawColor, drawMode, drawWidth]);
 

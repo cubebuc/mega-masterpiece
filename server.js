@@ -234,16 +234,21 @@ io.on('connection', (socket) =>
         io.to(player.id).emit('newPlayerOnTurn', [playerIndex, lobby.currentWord]);
         io.to(getLobbyRoom()).except(player.id).emit('newPlayerOnTurn', [playerIndex, lobby.currentWord.replace(/[^\s]/g, '_')]);
     
-        lobby.timeout = setTimeout(() => 
+        let preTurnTimeout = 2000;
+        lobby.timeout = setTimeout(() =>
         {
-            endTurn();
-            nextTurn();
-        }, lobby.time * 1000 + 4000);
+            roomEmit('startTurn');
+            lobby.timeout = setTimeout(() => 
+            {
+                endTurn();
+            }, lobby.time * 1000);
+        }, preTurnTimeout);
     }
 
     function endTurn()
     {
-
+        let endTurnTimeout = 2000;
+        nextTurn();
     }
     
     function disconnecting()

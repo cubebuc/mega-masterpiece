@@ -9,7 +9,6 @@ function Chat({socket, lobby, setLobby})
     {
         function messageSent(message)
         {
-            console.log(message);
             setMessages([...messages, message]);
         }
 
@@ -28,8 +27,9 @@ function Chat({socket, lobby, setLobby})
         return () =>
         {
             socket.off('messageSent', messageSent);
+            socket.off('playerGuessed', playerGuessed);
         }
-    }, [socket, lobby, messages]);
+    }, [socket, lobby, setLobby, messages]);
 
     function onKeyDown(e)
     {
@@ -44,7 +44,6 @@ function Chat({socket, lobby, setLobby})
 
     function sendMessage(message)
     {
-        console.log(message);
         socket.emit('messageSent', message);
     }
 
