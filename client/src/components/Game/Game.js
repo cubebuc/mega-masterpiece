@@ -112,7 +112,8 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             
             timeCounter.current = -1;
             setTime(lobby.time);
-            setRound(round + 1);
+            if(data[0] == 0)
+                setRound(round + 1);
             clearCanvas();
         }
 
@@ -122,9 +123,27 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             timeCounter.current = lobby.time;
         }
 
-        function endTurn()
+        function endTurn(word)
         {
-            setOverlayContent(lobby.players.map((player, index) => <p key={index}>{player.nickname}: {player.pointsThisTurn}</p>));
+            setOverlayContent(
+                <div>
+                    <p>The word was <b>{word}</b></p>
+                    {lobby.players.map((player, index) => <p key={index}>{player.nickname}: {player.pointsThisTurn}</p>)}
+                </div>
+            );
+            setOverlayActive(' active');
+        }
+
+        function endGame()
+        {
+            setOverlayContent(
+                <div className='leaderboard'>
+                    <b>Game ended</b>
+                    <p className='first-place'>{lobby.players[0].nickname}: {lobby.players[0].points}</p>
+                    {lobby.players.length >= 2 && <p className='second-place'>{lobby.players[1].nickname}: {lobby.players[1].points}</p>}
+                    {lobby.players.length >= 3 && <p className='third-place'>{lobby.players[2].nickname}: {lobby.players[2].points}</p>}
+                </div>
+            );
             setOverlayActive(' active');
         }
 
@@ -138,6 +157,7 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         socket.on('newPlayerOnTurn', newPlayerOnTurn);
         socket.on('startTurn', startTurn);
         socket.on('endTurn', endTurn);
+        socket.on('endGame', endGame);
 
         return () =>
         {
@@ -151,6 +171,7 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             socket.off('newPlayerOnTurn', newPlayerOnTurn);
             socket.off('startTurn', startTurn);
             socket.off('endTurn', endTurn);
+            socket.off('endGame', endGame);
         }
     }, [socket, lobby, setLobby, isAdmin, time, setTime, drawColor, drawMode, drawWidth]);
 
