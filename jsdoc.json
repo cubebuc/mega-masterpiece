@@ -1,0 +1,13 @@
+{
+    "plugins": [],
+    "recurseDepth": 10,
+    "source": {
+        "exclude": ["node_modules", "client/node_modules"],
+        "includePattern": ".js$"
+    },
+    "sourceType": "module",
+    "templates": {
+        "cleverLinks": true,
+        "monospaceLinks": true
+    }
+}

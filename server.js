@@ -23,7 +23,7 @@ const io = new Server(server);
 io.on('connection', (socket) =>
 {
     /**
-     * Emits to everyone in the lobby except the origin
+     * Emits to everyone in the lobby except the origin.
      * @function otherEmit
      * @param {string} event - Event name.
      * @param {*} args - Event arguments.
@@ -37,7 +37,7 @@ io.on('connection', (socket) =>
     }
 
     /**
-     * Emits to everyone in the lobby
+     * Emits to everyone in the lobby.
      * @function roomEmit
      * @param {string} event - Event name.
      * @param {*} args - Event arguments.
@@ -61,9 +61,9 @@ io.on('connection', (socket) =>
     }
 
     /**
-     * Gets this socket's lobby
+     * Gets this socket's lobby.
      * @function getLobbyRoom
-     * @returns {Object} This socket's lobby;
+     * @returns {Object} This socket's lobby.
      */
     function getLobby()
     {
@@ -90,6 +90,11 @@ io.on('connection', (socket) =>
         return getLobby().players.find(p => socket.id === p.id).onTurn;
     }
     
+    /**
+     * Transmits the newly set number of rounds by admin to others in the lobby.
+     * @function roundsChanged
+     * @param {number} rounds Number of rounds in a game.
+     */
     function roundsChanged(rounds)
     {
         if(isAdmin())
@@ -99,6 +104,11 @@ io.on('connection', (socket) =>
         }
     }
     
+    /**
+     * Transmits the newly set amount of times by admin to others in the lobby.
+     * @function timeChanged
+     * @param {number} time Amount of time for one turn.
+     */
     function timeChanged(time)
     {
         if(isAdmin())
@@ -108,6 +118,11 @@ io.on('connection', (socket) =>
         }
     }
     
+    /**
+     * Transmits the newly set words by admin to others in the lobby.
+     * @function wordsChanged
+     * @param {string[]} words Array of words to choose from in the game.
+     */
     function wordsChanged(words)
     {
         if(isAdmin())
@@ -117,6 +132,10 @@ io.on('connection', (socket) =>
         }
     }
     
+    /**
+     * Tells all other sockets to join the game, if this socket is an admin.
+     * @function joinGame
+     */
     function joinGame()
     {
         if(isAdmin())
@@ -131,6 +150,11 @@ io.on('connection', (socket) =>
         }
     }
     
+    /**
+     * Transmits the position where this socket started drawing to others in the lobby.
+     * @function startDrawing
+     * @param {Object} pos Position object containing x, y position where this socket started drawing.
+     */
     function startDrawing(pos)
     {
         if(isOnTurn())
@@ -139,6 +163,11 @@ io.on('connection', (socket) =>
         }
     }
 
+    /**
+     * Transmits the position where this socket is drawing to others in the lobby.
+     * @function draw
+     * @param {Object} pos Position object containing x, y position where this socket is drawing.
+     */
     function draw(pos)
     {
         if(isOnTurn())
@@ -147,6 +176,11 @@ io.on('connection', (socket) =>
         }
     }
 
+    /**
+     * Transmits the newly set drawing color by the player on turn to others in the lobby.
+     * @function colorChanged
+     * @param {string} color Hex value of the new drawing color.
+     */
     function colorChanged(color)
     {
         if(isOnTurn())
@@ -155,6 +189,11 @@ io.on('connection', (socket) =>
         }
     }
 
+    /**
+     * Transmits the newly set line width by the player on turn to others in the lobby.
+     * @function widthChanged
+     * @param {number} width The width of the brush.
+     */
     function widthChanged(width)
     {
         if(isOnTurn())
@@ -163,6 +202,10 @@ io.on('connection', (socket) =>
         }
     }
 
+    /**
+     * Transmits the action of clearing the canvas by the player on turn to others in the lobby.
+     * @function clearCanvas
+     */
     function clearCanvas()
     {
         if(isOnTurn())
@@ -171,11 +214,21 @@ io.on('connection', (socket) =>
         }
     }
 
+    /**
+     * Sends a request to the admin for sending the data to the corresponding socket.
+     * @function turnDataRequested
+     * @param {string} socketId Id of the socket, that requested the data.
+     */
     function turnDataRequested(socketId)
     {
         io.to(getLobby().players[0].id).emit('turnDataRequested', socketId);
     }
 
+    /**
+     * Sends the data recieved from the admin to the socket, that requested it.
+     * @function turnDataSent
+     * @param {*} data Object containing current turn time and picture data.
+     */
     function turnDataSent(data)
     {
         if(isAdmin())
@@ -184,6 +237,12 @@ io.on('connection', (socket) =>
         }
     }
 
+    /**
+     * Checks whether the sender guessed the word, gives the points
+     * and transmits it to others in the lobby.
+     * @function messageSent
+     * @param {Object} message Object containing the message sender and the message's content.
+     */
     function messageSent(message)
     {
         let lobby = getLobby();
@@ -219,6 +278,12 @@ io.on('connection', (socket) =>
         otherEmit('messageSent', message);
     }
 
+    /**
+     * Connects the socket to the desired lobby and transmit it to others in the lobby.
+     * If the lobby doesn't exist, create a new one.
+     * @function join
+     * @param {Object} data Object containing the newly joined player's nickname and lobby id.
+     */
     function join(data)
     {
         let lobby = lobbies.find(l => l.id === data.lobbyId)
@@ -238,6 +303,11 @@ io.on('connection', (socket) =>
         io.to(socket.id).emit('join', JSON.stringify(newLobby));
     }
 
+    /**
+     * Marks this socket as ready.
+     * If all the sockets in a lobby are ready, the game starts.
+     * @function ready
+     */
     function ready()
     {
         let lobby = getLobby();
@@ -251,6 +321,12 @@ io.on('connection', (socket) =>
         }
     }
 
+    /**
+     * Prepares all lobby variables for the next turn.
+     * Transmits the data about the next turn to others in the lobby.
+     * 
+     * @function nextTurn
+     */
     function nextTurn()
     {
         let lobby = getLobby();
