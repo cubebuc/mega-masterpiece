@@ -373,6 +373,11 @@ io.on('connection', (socket) =>
         }, preTurnTimeout);
     }
 
+    /**
+     * Transmits the end of the turn to the others in the lobby.
+     * Then starts a new turn.
+     * @function endTurn
+     */
     function endTurn()
     {
         let lobby = getLobby();
@@ -387,6 +392,11 @@ io.on('connection', (socket) =>
         }, endTurnTimeout);
     }
 
+    /**
+     * Transmits the end of the game to the others in the lobby.
+     * Then starts a new game.
+     * @function endGame
+     */
     function endGame()
     {
         let lobby = getLobby();
@@ -399,6 +409,10 @@ io.on('connection', (socket) =>
         }, leaderboardTime);
     }
     
+    /**
+     * Removes a player from the lobby and transmits it to the others in the lobby.
+     * @function disconnecting
+     */
     function disconnecting()
     {
         let lobby = getLobby();

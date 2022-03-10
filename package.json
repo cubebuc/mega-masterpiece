@@ -8,7 +8,8 @@
   },
   "scripts": {
     "start": "node server.js",
-    "build": "cd client && npm install && npm run build"
+    "build": "cd client && npm run build && cd.. && npm run start",
+    "doc": "jsdoc . -r -c jsdoc.json -d doc"
   },
   "keywords": [],
   "author": "",
