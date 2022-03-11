@@ -1,3 +1,5 @@
+/** @module Game */
+
 import React, { useEffect, useRef, useState } from 'react';
 import Player from './Player'
 import Chat from './Chat/Chat';
@@ -44,21 +46,40 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         context.beginPath();
         contextRef.current = context;
 
+        /**
+         * Sets the new color.
+         * @function colorChanged
+         * @param {string} color Hex value of the new color.
+         */
         function colorChanged(color)
         {
             setDrawColor(color);
         }
 
+        /**
+         * Sets the new brush size.
+         * @function widthChanged
+         * @param {number} width New brush size.
+         */
         function widthChanged(width)
         {
             setDrawWidth(width);
         }
 
+        /**
+         * Clears the canvas.
+         * @function clearCanvas
+         */
         function clearCanvas()
         {
             context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         }
 
+        /**
+         * If this socket is an admin, send the data to the socket that requested it.
+         * @function turnDataRequested
+         * @param {string} socketId Which socket requested the data.
+         */
         function turnDataRequested(socketId)
         {
             if(isAdmin())
@@ -73,6 +94,11 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             }
         }
 
+        /**
+         * Sets the time and image data recieved from the admin.
+         * @function turnDataRequested
+         * @param {Object} data Object containing the lobby time and image data.
+         */
         function turnDataSent(data)
         {
             if(data.timeCounter != -1)
@@ -87,6 +113,11 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             context.putImageData(imageB, 0, 300);
         }
 
+        /**
+         * Sets the new turn data recieved and prepares for the next turn.
+         * @function newPlayerOnTurn
+         * @param {Object} data Object containing new turn data.
+         */
         function newPlayerOnTurn(data)
         {
             let newLobby = JSON.parse(JSON.stringify(lobby));
@@ -117,12 +148,21 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             clearCanvas();
         }
 
+        /**
+         * Hides the canvas overlay and sets the timer.
+         * @function startTurn
+         */
         function startTurn()
         {
             setOverlayActive('');
             timeCounter.current = lobby.time;
         }
 
+        /**
+         * Shows the end turn overlay.
+         * @function endTurn
+         * @param {string} word This turn's word.
+         */
         function endTurn(word)
         {
             setOverlayContent(
@@ -134,6 +174,10 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             setOverlayActive(' active');
         }
 
+        /**
+         * Shows the end game overlay.
+         * @function endGame
+         */
         function endGame()
         {
             setOverlayContent(
@@ -175,6 +219,11 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         }
     }, [socket, lobby, setLobby, isAdmin, time, setTime, drawColor, drawMode, drawWidth]);
 
+    /**
+     * Handles when user pressed the mouse inside the canvas.
+     * @function onMouseDown
+     * @param {Event} e Mouse down event.
+     */
     function onMouseDown(e)
     {
         if(e.buttons !== 1   || !isOnTurn())
@@ -198,6 +247,11 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         }
     }
 
+    /**
+     * Handles when user depressed the mouse inside the canvas.
+     * @function onMouseUp
+     * @param {Event} e Mouse up event.
+     */
     function onMouseUp(e)
     {
         if(e.button !== 0 || !isOnTurn())
@@ -213,6 +267,11 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         }
     }
 
+    /**
+     * Handles when user moves the mouse inside the canvas.
+     * @function onMouseMove
+     * @param {Event} e Mouse move event.
+     */
     function onMouseMove(e)
     {
         if(e.buttons !== 1 || !isOnTurn())
@@ -228,6 +287,12 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         }
     }
 
+    /**
+     * Gets the x, y position of the mouse event.
+     * @function getMousePos
+     * @param {Event} e Mouse event.
+     * @returns {Object} Object containing the mouse event's x, y position.
+     */
     function getMousePos(e)
     {
         let rect = canvasRef.current.getBoundingClientRect();
@@ -241,12 +306,22 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         return pos;
     }
 
+    /**
+     * Starts the drawing action at the desired position.
+     * @function startDrawing
+     * @param {Object} pos Object containing the x, y position.
+     */
     function startDrawing(pos)
     {
         contextRef.current.beginPath();
         contextRef.current.moveTo(pos.x, pos.y);
     }
 
+    /**
+     * Draws line toward the desired position.
+     * @function draw
+     * @param {Object} pos Object containing the x, y position.
+     */
     function draw(pos)
     {
         contextRef.current.lineTo(pos.x, pos.y);

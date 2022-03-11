@@ -1,3 +1,5 @@
+/** @module DrawingOptions */
+
 import React from 'react';
 import './DrawingOptions.scss'
 
@@ -26,8 +28,13 @@ function DrawingOptions({socket, isOnTurn, canvasRef, contextRef, drawColor, set
                     '#ba5901', 
                     '#763100',];
 
-        const widths = [3, 10, 25, 40];
+    const widths = [3, 10, 25, 40];
 
+    /**
+     * Changes the color and transmits it to others in the lobby if this socket is on turn.
+     * @function onColorChange
+     * @param {string} color Hex value of the new color. 
+     */
     function onColorChange(color)
     {
         if(isOnTurn())
@@ -37,6 +44,11 @@ function DrawingOptions({socket, isOnTurn, canvasRef, contextRef, drawColor, set
         }
     }
 
+    /**
+     * Changes the drawing mode and transmits it to the others in the lobby if this socket is on turn.
+     * @function onModeChange
+     * @param {Event} e Radio button click event.
+     */
     function onModeChange(e)
     {
         if(isOnTurn())
@@ -45,6 +57,11 @@ function DrawingOptions({socket, isOnTurn, canvasRef, contextRef, drawColor, set
         }
     }
 
+    /**
+     * Changes the brush width and transmits it to others in the lobby if this socket is on turn.
+     * @function onWidthChange
+     * @param {number} width New brush width value.
+     */
     function onWidthChange(width)
     {
         if(isOnTurn())
@@ -54,6 +71,10 @@ function DrawingOptions({socket, isOnTurn, canvasRef, contextRef, drawColor, set
         }
     }
 
+    /**
+     * Clears the canvas and transmits it to others in the lobby if this socket is on turn.
+     * @function onClearCanvas
+     */
     function onClearCanvas()
     {
         if(isOnTurn())

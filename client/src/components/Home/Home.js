@@ -1,19 +1,35 @@
+/** @module Home */
+
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'
 import './Home.scss'
 
 function Home({setAppView, socket, setLobby}) 
 {
     const [nickname, setNickname] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => 
     {
+        /**
+         * Sets the lobby recieved from the server and switches the view.
+         * @function join
+         * @param {Object} lobby Lobby object.
+         */
         function join(lobby)
         {
             setLobby(JSON.parse(lobby));
             if(JSON.parse(lobby).inGame)
+            {
                 setAppView('game');
+            }
             else
+            {
+                const params = new URLSearchParams();
+                params.append(lobby.id);
+                navigate.push({search: params.toString()});
                 setAppView('lobby');
+            }    
         }
 
         socket.on('join', join);
@@ -21,6 +37,11 @@ function Home({setAppView, socket, setLobby})
         return () => socket.off('join', join);
     }, [setAppView, socket, setLobby]);
     
+    /**
+     * Sends join request to the server.
+     * @function onSubmit
+     * @param {Event} e Form submit event.
+     */
     function onSubmit(e)
     {
         e.preventDefault();

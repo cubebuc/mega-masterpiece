@@ -1,0 +1,19 @@
+{
+    "plugins": [],
+    "recurseDepth": 10,
+    "source": {
+        "exclude": ["node_modules", "client/node_modules", "docs"],
+        "includePattern": ".js$"
+    },
+    "sourceType": "module",
+    "templates": {
+        "cleverLinks": true,
+        "monospaceLinks": true
+    },
+    "scripts": {
+        "generate-docs": "node_modules/.bin/jsdoc --configure .jsdoc.json --verbose"
+    },
+    "opts": {
+        "template": "docs/jsdoc-template"
+    }
+}

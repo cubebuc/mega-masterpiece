@@ -1,3 +1,5 @@
+/** @module Lobby */
+
 import React, { useEffect } from 'react';
 import LobbyOptions from './LobbyOptions';
 import './Lobby.scss'
@@ -6,6 +8,10 @@ function Lobby({setAppView, socket, lobby, setLobby, isAdmin})
 {
     useEffect(() => 
     {
+        /**
+         * Switches to the game view transmits to the server, that this socket is ready.
+         * @function joinGame
+         */
         function joinGame()
         {
             setAppView('game');
@@ -17,6 +23,11 @@ function Lobby({setAppView, socket, lobby, setLobby, isAdmin})
         return () => socket.off('joinGame');
     }, [socket, setAppView])
 
+    /**
+     * Transmits to the server, that others can start joining the game.
+     * Switches to the game view and transmits to the server, that this socket is ready.
+     * @function onClick
+     */
     function onClick()
     {
         socket.emit('joinGame');

@@ -1,19 +1,36 @@
+/** @module LobbyOptions */
+
 import React, { useState, useEffect } from 'react';
 
 function LobbyOptions({socket, lobby, setLobby, isAdmin}) 
 {    
     useEffect(() => 
     {
+        /**
+         * Sets the new round count.
+         * @function roundsChanged
+         * @param {number} rounds Number of rounds for the game.
+         */
         function roundsChanged(rounds)
         {
             setRounds(rounds);
         }
 
+        /**
+         * Sets the new time in a turn.
+         * @function timeChanged
+         * @param {number} time Amount of time in a turn.
+         */
         function timeChanged(time)
         {
             setTime(time);
         }
 
+        /**
+         * Sets the new word array.
+         * @function wordsChanged
+         * @param {string[]} words Array of the words for the game.
+         */
         function wordsChanged(words)
         {
             setWords(words);
@@ -31,6 +48,11 @@ function LobbyOptions({socket, lobby, setLobby, isAdmin})
         }
     }, [socket, lobby]);
 
+    /**
+     * Transmits the round count change if this socket is an admin.
+     * @function onRoundsSelectChange
+     * @param {Event} e Select change event.
+     */
     function onRoundsSelectChange(e)
     {
         if(isAdmin())
@@ -42,6 +64,11 @@ function LobbyOptions({socket, lobby, setLobby, isAdmin})
         }
     }
 
+    /**
+     * Transmits the time amount change if this socket is an admin.
+     * @function onTimeSelectChange
+     * @param {Event} e Select change event.
+     */
     function onTimeSelectChange(e)
     {
         if(isAdmin())
@@ -53,6 +80,11 @@ function LobbyOptions({socket, lobby, setLobby, isAdmin})
         }
     }
 
+    /**
+     * Transmits the word array change if this socket is and admin.
+     * @function onWordsTextAreaChange
+     * @param {Event} e Text area change event.
+     */
     function onWordsTextAreaChange(e)
     {
         if(isAdmin())
@@ -64,6 +96,11 @@ function LobbyOptions({socket, lobby, setLobby, isAdmin})
         }
     }
 
+    /**
+     * Sets the rounds for the game.
+     * @function setRounds
+     * @param {number} rounds Number of rounds for the game.
+     */
     function setRounds(rounds)
     {
         let newLobby = JSON.parse(JSON.stringify(lobby));
@@ -71,6 +108,11 @@ function LobbyOptions({socket, lobby, setLobby, isAdmin})
         setLobby(newLobby);
     }
 
+    /**
+     * Sets the time in a round.
+     * @function setTime
+     * @param {number} time Amount of time in a turn.
+     */
     function setTime(time)
     {
         let newLobby = JSON.parse(JSON.stringify(lobby));
@@ -78,6 +120,11 @@ function LobbyOptions({socket, lobby, setLobby, isAdmin})
         setLobby(newLobby);
     }
 
+    /**
+     * Sets the word array for the game.
+     * @function setWords
+     * @param {string[]} words Word array.
+     */
     function setWords(words)
     {
         let newLobby = JSON.parse(JSON.stringify(lobby));

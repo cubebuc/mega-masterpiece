@@ -1,3 +1,5 @@
+/** @module Chat */
+
 import React, { useEffect, useState } from 'react'
 import './Chat.scss'
 
@@ -7,11 +9,21 @@ function Chat({socket, lobby, setLobby})
 
     useEffect(() =>
     {
+        /**
+         * Adds the recieved message to the message array.
+         * @function messageSent
+         * @param {Object} message Object containing the message sender and the message's content.
+         */
         function messageSent(message)
         {
             setMessages([...messages, message]);
         }
 
+        /**
+         * Set the player's points and shows who guessed the word.
+         * @function playerGuessed
+         * @param {Object} data Object containing the player's socket id and the amount of points recieved.
+         */
         function playerGuessed(data)
         {
             let newLobby = JSON.parse(JSON.stringify(lobby));
@@ -33,6 +45,11 @@ function Chat({socket, lobby, setLobby})
         }
     }, [socket, lobby, setLobby, messages]);
 
+    /**
+     * Sends the message, when the user presses Enter.
+     * @function onKeyDown
+     * @param {Event} e OnKeyDown event object.
+     */
     function onKeyDown(e)
     {
         if(e.key === 'Enter')
@@ -44,6 +61,11 @@ function Chat({socket, lobby, setLobby})
         }
     }
 
+    /**
+     * Transmits the message to the server.
+     * @function sendMessage
+     * @param {Object} message Object containing the message sender and the message's content.
+     */
     function sendMessage(message)
     {
         socket.emit('messageSent', message);

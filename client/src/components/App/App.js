@@ -1,3 +1,5 @@
+/** @module App */
+
 import { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import Home from '../Home/Home';
@@ -24,6 +26,11 @@ function App()
 
     useEffect(() =>
     {
+        /**
+         * Adds the newly joined player to the lobby.
+         * @function playerJoined
+         * @param {Object} player Object containing the player's data.
+         */
         function playerJoined(player)
         {
             let newLobby = JSON.parse(JSON.stringify(lobby));
@@ -31,6 +38,11 @@ function App()
             setLobby(newLobby);
         }
 
+        /**
+         * Removes the disconnected player from the lobby.
+         * @function playerDisconnected
+         * @param {string} id Id of the player, that disconnected.
+         */
         function playerDisconnected(id)
         {
             let newLobby = JSON.parse(JSON.stringify(lobby));
@@ -55,11 +67,21 @@ function App()
         }
     }, [socket, lobby, setLobby]);
 
+    /**
+     * Returns whether this socket is an admin.
+     * @function isAdmin
+     * @returns {boolean} Whether this socket is an admin.
+     */
     function isAdmin()
     {
         return socket.id === lobby.players[0].id;
     }
 
+    /**
+     * Returns whether this socket is on turn.
+     * @function isOnTurn
+     * @returns {boolean} Whether this socket is on turn.
+     */
     function isOnTurn()
     {
         return lobby.players.find(p => socket.id === p.id).onTurn;

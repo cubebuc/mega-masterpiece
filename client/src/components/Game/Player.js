@@ -1,3 +1,5 @@
+/** @module Player */
+
 import React, { useEffect, useState } from 'react';
 
 function Player({lobby, index}) 

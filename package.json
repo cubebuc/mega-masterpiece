@@ -9,7 +9,7 @@
   "scripts": {
     "start": "node server.js",
     "build": "cd client && npm run build && cd.. && npm run start",
-    "doc": "jsdoc . -r -c jsdoc.json -d doc"
+    "doc": "jsdoc . -r -c docs\\config.json -d docs\\build"
   },
   "keywords": [],
   "author": "",
