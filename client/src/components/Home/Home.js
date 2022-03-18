@@ -1,14 +1,12 @@
 /** @module Home */
 
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'
 import './Home.scss'
 
 function Home({setAppView, socket, setLobby}) 
 {
     const [nickname, setNickname] = useState('');
-    const navigate = useNavigate();
-
+    
     useEffect(() => 
     {
         /**
@@ -18,16 +16,17 @@ function Home({setAppView, socket, setLobby})
          */
         function join(lobby)
         {
-            setLobby(JSON.parse(lobby));
-            if(JSON.parse(lobby).inGame)
+            let parsedLobby = JSON.parse(lobby);
+            setLobby(parsedLobby);
+            if(parsedLobby.inGame)
             {
                 setAppView('game');
             }
             else
             {
-                const params = new URLSearchParams();
-                params.append(lobby.id);
-                navigate.push({search: params.toString()});
+                const url = new URL(window.location);
+                url.searchParams.set('id', parsedLobby.id);
+                window.history.replaceState({}, '', url);
                 setAppView('lobby');
             }    
         }
@@ -47,7 +46,7 @@ function Home({setAppView, socket, setLobby})
         e.preventDefault();
 
         const searchParams = new URLSearchParams(window.location.search);
-        const lobbyId = searchParams.keys().next().value;
+        const lobbyId = searchParams.get('id');
 
         let data = {nickname: nickname, lobbyId: lobbyId}
         socket.emit('join', data);
