@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node server.js",
-    "build": "cd client && npm run build && cd.. && npm run start",
+    "compile": "cd client && npm run build && cd.. && npm run start",
     "docs": "jsdoc . -r -c docs\\config.json -d docs\\build"
   },
   "keywords": [],
