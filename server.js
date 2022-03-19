@@ -291,7 +291,7 @@ io.on('connection', (socket) =>
         let lobby = lobbies.find(l => l.id === data.lobbyId)
         if(!lobby)
         {
-            lobby = {id: socket.id.substring(0, 16), inGame: false, players: [], currentPlayer: -1, rounds: 5, currentRound: 0, time: "90", words: ['Kočka Pes', 'Žirafa Slon', 'Ptakopysk Lemur'], currentWord: "", playersGuessed: []};
+            lobby = {id: socket.id.substring(0, 16), inGame: false, players: [], currentPlayer: -1, rounds: 5, currentRound: 0, time: '90', words: ['Kočka Pes', 'Žirafa Slon', 'Ptakopysk Lemur'], currentWord: '', playersGuessed: []};
             lobbies.push(lobby);
         }
 
@@ -407,6 +407,18 @@ io.on('connection', (socket) =>
         let leaderboardTime = 4000;
         lobby.timeout = setTimeout(() =>
         {
+            lobby.inGame = false;
+            lobby.currentPlayer = -1;
+            lobby.currentRound = 0;
+            lobby.playersGuessed = [];
+
+            lobby.players.forEach(player =>
+            {
+                player.ready = false;
+                player.points = 0;
+            });
+
+            roomEmit('restartGame');
             //restart game OR throw everyone to lobby
         }, leaderboardTime);
     }

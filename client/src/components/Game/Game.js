@@ -6,7 +6,7 @@ import Chat from './Chat/Chat';
 import DrawingOptions from './DrawingOptions/DrawingOptions';
 import './Game.scss'
 
-function Game({socket, lobby, setLobby, isAdmin, isOnTurn}) 
+function Game({setAppView, socket, lobby, setLobby, isAdmin, isOnTurn}) 
 {
     const [overlayContent, setOverlayContent] = useState('');
     const [overlayActive, setOverlayActive] = useState(' active');
@@ -191,6 +191,17 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             setOverlayActive(' active');
         }
 
+        function restartGame()
+        {
+            let newLobby = JSON.parse(JSON.stringify(lobby));
+            newLobby.players.forEach(player =>
+            {
+                player.points = 0;
+            });
+            setLobby(newLobby);
+            setAppView('lobby');
+        }
+
         socket.on('startDrawing', startDrawing);
         socket.on('draw', draw);
         socket.on('colorChanged', colorChanged);
@@ -202,6 +213,7 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
         socket.on('startTurn', startTurn);
         socket.on('endTurn', endTurn);
         socket.on('endGame', endGame);
+        socket.on('restartGame', restartGame);
 
         return () =>
         {
@@ -216,6 +228,7 @@ function Game({socket, lobby, setLobby, isAdmin, isOnTurn})
             socket.off('startTurn', startTurn);
             socket.off('endTurn', endTurn);
             socket.off('endGame', endGame);
+            socket.off('restartGame', restartGame);
         }
     }, [socket, lobby, setLobby, isAdmin, time, setTime, drawColor, drawMode, drawWidth]);
 
