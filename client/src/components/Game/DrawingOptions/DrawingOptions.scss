@@ -5,6 +5,21 @@
         margin: 2px;
     }
 
+    [type=radio] { 
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    [type=radio] + img {
+        cursor: pointer;
+    }
+      
+    [type=radio]:checked + img {
+        outline: 2px solid #f00;
+    }
+
     .current-color {
         width: 60px;
         height: 60px;
