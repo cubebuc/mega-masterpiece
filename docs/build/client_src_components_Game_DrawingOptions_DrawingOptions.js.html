@@ -154,12 +154,12 @@ function DrawingOptions({socket, isOnTurn, canvasRef, contextRef, drawColor, set
      * @function onWidthChange
      * @param {number} width New brush width value.
      */
-    function onWidthChange(width)
+    function onWidthChange(e)
     {
         if(isOnTurn())
         {
-            setDrawWidth(width);
-            socket.emit('widthChanged', width);
+            setDrawWidth(e.target.value);
+            socket.emit('widthChanged', e.target.value);
         }
     }
 
@@ -183,11 +183,21 @@ function DrawingOptions({socket, isOnTurn, canvasRef, contextRef, drawColor, set
                     {colors.map((color, index) => &lt;button key={index} style={{backgroundColor: color}} onClick={() => onColorChange(color)} disabled={!isOnTurn()} />)}
                 &lt;/div>
                 &lt;div className='drawing-modes' onChange={onModeChange}>
-                    &lt;input type="radio" name='mode' value={'brush'} className='brush' defaultChecked disabled={!isOnTurn()} />
-                    &lt;input type="radio" name='mode' value={'line'} className='line' disabled={!isOnTurn()} />
+                    &lt;label>
+                        &lt;input type='radio' name='mode' value={'brush'} defaultChecked disabled={!isOnTurn()} />
+                        &lt;img src='images/brush.png' />
+                    &lt;/label>
+                    &lt;label>
+                        &lt;input type='radio' name='mode' value={'line'} disabled={!isOnTurn()} />
+                        &lt;img src='images/line.png' />
+                    &lt;/label>
                 &lt;/div>
-                &lt;div className='brush-size'>
-                    {widths.map((width, index) => &lt;button key={index} onClick={() => onWidthChange(width)} disabled={!isOnTurn()} />)}
+                &lt;div className='brush-size' onChange={onWidthChange}>
+                    {widths.map((width, index) => 
+                    &lt;label>
+                        &lt;input key={index} type='radio' name='width' value={width} defaultChecked={index == 1} disabled={!isOnTurn()} />
+                        &lt;img src={'images/size' + (index + 1).toString() + '.png'} />
+                    &lt;/label>)}
                 &lt;/div>
                 &lt;div className='clear-canvas'>
                     &lt;button onClick={() => onClearCanvas()} disabled={!isOnTurn()} />
