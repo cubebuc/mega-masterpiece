@@ -130,7 +130,7 @@ function Lobby({setAppView, socket, lobby, setLobby, isAdmin})
     return (
         &lt;div className='Lobby'>
             &lt;h1>Lobby&lt;/h1>
-            &lt;strong>{window.location.protocol}//{window.location.host}/?{lobby.id}&lt;/strong>
+            &lt;strong>{window.location.protocol}//{window.location.host}/?id={lobby.id}&lt;/strong>
             &lt;div className='options-players'>
                 &lt;LobbyOptions socket={socket} lobby={lobby} setLobby={setLobby} isAdmin={isAdmin} />
                 &lt;div className='players'>

@@ -14,10 +14,16 @@ const PORT = process.env.PORT || 5000;
 const server = http.createServer(app);
 
 app.use(express.static(path.join(__dirname, 'client', 'build')));
+app.use(express.static(path.join(__dirname, 'docs', 'build')));
 
 app.get('/', function(_req, res) 
 {
     res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+});
+
+app.get('/docs', function(_req, res)
+{
+    res.sendFile(path.join(__dirname, 'docs', 'build', 'index.html'));
 });
 
 const io = new Server(server);
@@ -396,7 +402,7 @@ io.on('connection', (socket) =>
 
     /**
      * Transmits the end of the game to the others in the lobby.
-     * Then starts a new game.
+     * Then sends everyone back to the lobby.
      * @function endGame
      */
     function endGame()
@@ -419,7 +425,6 @@ io.on('connection', (socket) =>
             });
 
             roomEmit('restartGame');
-            //restart game OR throw everyone to lobby
         }, leaderboardTime);
     }
     
