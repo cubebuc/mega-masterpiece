@@ -183,7 +183,7 @@ function App()
         &lt;div className='App'>
             {appView === 'home' &amp;&amp; socket &amp;&amp; &lt;Home setAppView={setAppView} socket={socket} setLobby={setLobby} />}
             {appView === 'lobby' &amp;&amp; lobby &amp;&amp; &lt;Lobby setAppView={setAppView} socket={socket} lobby={lobby} setLobby={setLobby} isAdmin={isAdmin} />}
-            {appView === 'game' &amp;&amp; &lt;Game socket={socket} lobby={lobby} setLobby={setLobby} isAdmin={isAdmin} isOnTurn={isOnTurn} />}
+            {appView === 'game' &amp;&amp; &lt;Game setAppView={setAppView} socket={socket} lobby={lobby} setLobby={setLobby} isAdmin={isAdmin} isOnTurn={isOnTurn} />}
         &lt;/div>
     );
 }
