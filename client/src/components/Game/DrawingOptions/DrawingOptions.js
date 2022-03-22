@@ -93,18 +93,18 @@ function DrawingOptions({socket, isOnTurn, canvasRef, contextRef, drawColor, set
                 <div className='drawing-modes' onChange={onModeChange}>
                     <label>
                         <input type='radio' name='mode' value={'brush'} defaultChecked disabled={!isOnTurn()} />
-                        <img src='images/brush.png' />
+                        <img src='images/brush.png' alt='brush.png' />
                     </label>
                     <label>
                         <input type='radio' name='mode' value={'line'} disabled={!isOnTurn()} />
-                        <img src='images/line.png' />
+                        <img src='images/line.png' alt='line.png' />
                     </label>
                 </div>
                 <div className='brush-size' onChange={onWidthChange}>
                     {widths.map((width, index) => 
                     <label>
-                        <input key={index} type='radio' name='width' value={width} defaultChecked={index == 1} disabled={!isOnTurn()} />
-                        <img src={'images/size' + (index + 1).toString() + '.png'} />
+                        <input key={index} type='radio' name='width' value={width} defaultChecked={index === 1} disabled={!isOnTurn()} />
+                        <img src={'images/size' + (index + 1).toString() + '.png'} alt={'size' + (index + 1).toString() + '.png'} />
                     </label>)}
                 </div>
                 <div className='clear-canvas'>

@@ -4,8 +4,9 @@ const express = require('express');
 const app = express();
 const http = require('http');
 const { Server } = require('socket.io');
-const { randomInt } = require('crypto');
 const path = require('path')
+const { randomInt } = require('crypto');
+const stringSimilarity = require('string-similarity');
 
 const POINTS = [20, 14, 9, 6, 4, 2, 1];
 let lobbies = [];
@@ -249,7 +250,7 @@ io.on('connection', (socket) =>
      * Checks whether the sender guessed the word, gives the points
      * and transmits it to others in the lobby.
      * @function messageSent
-     * @param {Object} message Object containing the message sender and the message's content.
+     * @param {Object} message Object containing the message's raw contents.
      */
     function messageSent(message)
     {
@@ -266,7 +267,7 @@ io.on('connection', (socket) =>
             }
             return;
         }
-        else if(message.value.trim().toUpperCase().normalize() === lobby.currentWord.trim().toUpperCase().normalize())
+        else if(message.raw.trim().toUpperCase().normalize() === lobby.currentWord.trim().toUpperCase().normalize())
         {
             player.guessed = true;
             let points = POINTS[lobby.playersGuessed.length] || POINTS[POINTS.length - 1]
@@ -282,8 +283,14 @@ io.on('connection', (socket) =>
 
             return;
         }
-        
+
         otherEmit('messageSent', message);
+        
+        let similarity = stringSimilarity.compareTwoStrings(message.raw.trim().toUpperCase().normalize(), lobby.currentWord.trim().toUpperCase().normalize());
+        if(similarity > .5)
+        {
+            roomEmit('playerNearGuess', message.raw)
+        }
     }
 
     /**

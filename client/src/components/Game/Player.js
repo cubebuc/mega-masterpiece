@@ -7,7 +7,7 @@ function Player({lobby, index})
     useEffect(() =>
     {
         setPlayer(lobby.players[index]);
-    }, [lobby, setPlayer])
+    }, [lobby, setPlayer, index])
 
     return (
         <div className='Player' style={{backgroundColor: player.onTurn ? '#6ed1ff' : player.guessed ? '#6eff8b' : 'gray'}}>

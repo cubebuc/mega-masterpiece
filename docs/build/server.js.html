@@ -96,8 +96,9 @@ const express = require('express');
 const app = express();
 const http = require('http');
 const { Server } = require('socket.io');
-const { randomInt } = require('crypto');
 const path = require('path')
+const { randomInt } = require('crypto');
+const stringSimilarity = require('string-similarity');
 
 const POINTS = [20, 14, 9, 6, 4, 2, 1];
 let lobbies = [];
@@ -375,6 +376,9 @@ io.on('connection', (socket) =>
             return;
         }
         
+        let similarity = stringSimilarity.compareTwoStrings(message.value.trim().toUpperCase().normalize(), lobby.currentWord.trim().toUpperCase().normalize());
+        console.log(similarity);
+
         otherEmit('messageSent', message);
     }
 

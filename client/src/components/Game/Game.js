@@ -101,7 +101,7 @@ function Game({setAppView, socket, lobby, setLobby, isAdmin, isOnTurn})
          */
         function turnDataSent(data)
         {
-            if(data.timeCounter != -1)
+            if(data.timeCounter !== -1)
                 setTime(data.timeCounter - 1);
             timeCounter.current = data.timeCounter - 1;
 
@@ -132,7 +132,7 @@ function Game({setAppView, socket, lobby, setLobby, isAdmin, isOnTurn})
             
             setWord(data[1]);
 
-            if(data[0] == lobby.players.findIndex(player => player.id === socket.id))
+            if(data[0] === lobby.players.findIndex(player => player.id === socket.id))
             {
                 setOverlayContent(<p>YOU WILL BE DRAWING<br/>{data[1]}</p>);
             }
@@ -143,7 +143,7 @@ function Game({setAppView, socket, lobby, setLobby, isAdmin, isOnTurn})
             
             timeCounter.current = -1;
             setTime(lobby.time);
-            if(data[0] == 0)
+            if(data[0] === 0)
                 setRound(round + 1);
             clearCanvas();
         }
@@ -230,7 +230,7 @@ function Game({setAppView, socket, lobby, setLobby, isAdmin, isOnTurn})
             socket.off('endGame', endGame);
             socket.off('restartGame', restartGame);
         }
-    }, [socket, lobby, setLobby, isAdmin, time, setTime, drawColor, drawMode, drawWidth]);
+    }, [setAppView, socket, lobby, setLobby, isAdmin, time, setTime, round, drawColor, drawMode, drawWidth]);
 
     /**
      * Handles when user pressed the mouse inside the canvas.
@@ -239,7 +239,7 @@ function Game({setAppView, socket, lobby, setLobby, isAdmin, isOnTurn})
      */
     function onMouseDown(e)
     {
-        if(e.buttons !== 1   || !isOnTurn())
+        if(e.buttons !== 1 || !isOnTurn())
             return;
 
         let pos = getMousePos(e);

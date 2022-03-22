@@ -32,16 +32,23 @@ function Chat({socket, lobby, setLobby})
             newLobby.players[index].points += data[1];
             newLobby.players[index].pointsThisTurn = data[1];
             setLobby(newLobby);
-            setMessages([...messages, {sender: 'Player ' + lobby.players[index].nickname, value: 'guessed the word!'}]);
+            setMessages([...messages, {value: 'Player ' + lobby.players[index].nickname + ' guessed the word!', raw: ''}]);
+        }
+
+        function playerNearGuess(word)
+        {
+            setMessages([...messages, {value: '*' + word + '* was close!', raw: ''}]);
         }
 
         socket.on('messageSent', messageSent);
         socket.on('playerGuessed', playerGuessed);
+        socket.on('playerNearGuess', playerNearGuess);
 
         return () =>
         {
             socket.off('messageSent', messageSent);
             socket.off('playerGuessed', playerGuessed);
+            socket.off('playerNearGuess', playerNearGuess);
         }
     }, [socket, lobby, setLobby, messages]);
 
@@ -54,7 +61,7 @@ function Chat({socket, lobby, setLobby})
     {
         if(e.key === 'Enter')
         {
-            let message = {sender: lobby.players.find(p => p.id === socket.id).nickname, value: e.target.value};
+            let message = {value: lobby.players.find(p => p.id === socket.id).nickname + ': ' + e.target.value, raw: e.target.value};
             e.target.value = '';
             setMessages([...messages, message]);
             sendMessage(message);
@@ -74,7 +81,7 @@ function Chat({socket, lobby, setLobby})
     return (
         <div className='Chat'>
             <div className='messages'>
-                {messages.map((message, index) => <p className='message' key={index}>{message.sender}: {message.value}</p>)}
+                {messages.map((message, index) => <p className='message' key={index}>{message.value}</p>)}
             </div>
             <input type='text' onKeyDown={onKeyDown}/>
         </div>
