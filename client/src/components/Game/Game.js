@@ -101,6 +101,7 @@ function Game({setAppView, socket, lobby, setLobby, isAdmin, isOnTurn})
          */
         function turnDataSent(data)
         {
+            setOverlayActive('');
             if(data.timeCounter !== -1)
                 setTime(data.timeCounter - 1);
             timeCounter.current = data.timeCounter - 1;

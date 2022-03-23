@@ -168,7 +168,7 @@ io.on('connection', (socket) =>
     {
         if(isOnTurn())
         {
-            otherEmit('startDrawing', pos);
+            roomEmit('startDrawing', pos);
         }
     }
 
@@ -181,7 +181,7 @@ io.on('connection', (socket) =>
     {
         if(isOnTurn())
         {
-            otherEmit('draw', pos);
+            roomEmit('draw', pos);
         }
     }
 
