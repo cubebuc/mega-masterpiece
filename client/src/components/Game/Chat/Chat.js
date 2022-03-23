@@ -35,6 +35,11 @@ function Chat({socket, lobby, setLobby})
             setMessages([...messages, {value: 'Player ' + lobby.players[index].nickname + ' guessed the word!', raw: ''}]);
         }
 
+        /**
+         * Writes out a message, that a word was nearly correct.
+         * @function playerNearGuess
+         * @param {string} word The word, which was close to the word being guessed.
+         */
         function playerNearGuess(word)
         {
             setMessages([...messages, {value: '*' + word + '* was close!', raw: ''}]);
@@ -77,7 +82,7 @@ function Chat({socket, lobby, setLobby})
     {
         socket.emit('messageSent', message);
     }
-
+    
     return (
         <div className='Chat'>
             <div className='messages'>

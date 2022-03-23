@@ -1,11 +1,13 @@
 /** @module Lobby */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import LobbyOptions from './LobbyOptions';
 import './Lobby.scss'
 
 function Lobby({setAppView, socket, lobby, setLobby, isAdmin}) 
 {
+    const [buttonDisabled, setButtonDisabled] = useState(false);
+
     useEffect(() => 
     {
         /**
@@ -30,6 +32,7 @@ function Lobby({setAppView, socket, lobby, setLobby, isAdmin})
      */
     function onClick()
     {
+        setButtonDisabled(true);
         socket.emit('joinGame');
         setAppView('game');
         socket.emit('ready');
@@ -48,7 +51,7 @@ function Lobby({setAppView, socket, lobby, setLobby, isAdmin})
                     </div>
                 </div>
             </div>
-            <button onClick={onClick} disabled={!isAdmin()}>Start</button>
+            <button onClick={onClick} disabled={!isAdmin() || buttonDisabled}>Start</button>
         </div>
     );
 }

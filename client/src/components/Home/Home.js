@@ -6,6 +6,7 @@ import './Home.scss'
 function Home({setAppView, socket, setLobby}) 
 {
     const [nickname, setNickname] = useState('');
+    const [buttonDisabled, setButtonDisabled] = useState(false);
     
     useEffect(() => 
     {
@@ -43,6 +44,7 @@ function Home({setAppView, socket, setLobby})
      */
     function onSubmit(e)
     {
+        setButtonDisabled(true);
         e.preventDefault();
 
         const searchParams = new URLSearchParams(window.location.search);
@@ -57,7 +59,7 @@ function Home({setAppView, socket, setLobby})
             <h1>Home</h1>
             <form onSubmit={onSubmit}>
                 <input type='text' placeholder='Nickname' value={nickname} onChange={e => setNickname(e.target.value)} required />
-                <button>Join Lobby</button>
+                <button disabled={buttonDisabled}>Join Lobby</button>
             </form>
         </div>
     );
