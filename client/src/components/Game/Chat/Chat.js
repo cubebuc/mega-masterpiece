@@ -85,7 +85,7 @@ function Chat({socket, lobby, setLobby})
     
     return (
         <div className='Chat'>
-            <div className='messages'>
+            <div className='messages' >
                 {messages.map((message, index) => <p className='message' key={index}>{message.value}</p>)}
             </div>
             <input type='text' onKeyDown={onKeyDown}/>

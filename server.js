@@ -247,7 +247,8 @@ io.on('connection', (socket) =>
     }
 
     /**
-     * Checks whether the sender guessed the word, gives the points
+     * Checks whether the sender guessed the word, gives the points,
+     * calculates if the word is similar
      * and transmits it to others in the lobby.
      * @function messageSent
      * @param {Object} message Object containing the message's raw contents.
@@ -256,6 +257,8 @@ io.on('connection', (socket) =>
     {
         let lobby = getLobby();
         let player = lobby.players.find(p => p.id === socket.id);
+        let messageRaw = message.raw.trim().toUpperCase().normalize();
+        let wordRaw = lobby.currentWord.trim().toUpperCase().normalize();
         if(player.guessed)
         {
             for(let p of lobby.players)
@@ -267,7 +270,7 @@ io.on('connection', (socket) =>
             }
             return;
         }
-        else if(message.raw.trim().toUpperCase().normalize() === lobby.currentWord.trim().toUpperCase().normalize())
+        else if(messageRaw === wordRaw)
         {
             player.guessed = true;
             let points = POINTS[lobby.playersGuessed.length] || POINTS[POINTS.length - 1]
@@ -286,8 +289,10 @@ io.on('connection', (socket) =>
 
         otherEmit('messageSent', message);
         
-        let similarity = stringSimilarity.compareTwoStrings(message.raw.trim().toUpperCase().normalize(), lobby.currentWord.trim().toUpperCase().normalize());
-        if(similarity > .5)
+        let similarity = stringSimilarity.compareTwoStrings(messageRaw, wordRaw);
+
+        console.log(similarity);
+        if(similarity > .35)
         {
             roomEmit('playerNearGuess', message.raw)
         }

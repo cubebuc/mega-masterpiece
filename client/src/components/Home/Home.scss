@@ -3,21 +3,36 @@
     flex-direction: column;
     align-items: center;
 
-    h1 {
-        font-size: 4em;
+    *, ::placeholder {
+        color: white;
     }
 
     form {
         display: flex;
         flex-direction: column;
+        margin-top: 6em;
 
         * {
             width: 13em;
-            height: 1.6em;
+            height: 1.8em;
             margin-top: 10px;
             padding-left: 5px;
             font-size: 1.2em;
             border-radius: 3px;
+        }
+
+        input {
+            background-color: #7789cb;
+        }
+
+        button {
+            background-color: #7789cb;
+            transition-duration: 70ms;
+
+            &:hover {
+                background-color: #92a5eb;
+                transform: scale(1.08);
+            }
         }
     }
 }
