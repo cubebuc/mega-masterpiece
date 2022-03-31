@@ -47,7 +47,7 @@ function Lobby({setAppView, socket, lobby, setLobby, isAdmin})
                 <div className='players'>
                     <label htmlFor='player-list'>Players</label>
                     <div className='player-list'>
-                        {lobby.players.map((player, index) => <p key={index}>{player.nickname}</p>)}
+                        {lobby.players.map((player, index) => <p key={index}>{index + 1}. {player.nickname}</p>)}
                     </div>
                 </div>
             </div>
