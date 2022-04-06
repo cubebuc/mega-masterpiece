@@ -7,6 +7,7 @@
     border-radius: 0 5px 5px 0;
     border-left: 0;
     font-size: 1em !important;
+    background-color: #7789cb;
 
     div {
         padding: 5px;
@@ -17,5 +18,8 @@
     input {
         padding-inline: 2px;
         margin: 2px;
+        border: 2px solid black;
+        border-radius: 3px;
+        background-color: #7789cb;
     }
 }

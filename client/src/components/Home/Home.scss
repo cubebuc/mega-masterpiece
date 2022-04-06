@@ -3,10 +3,6 @@
     flex-direction: column;
     align-items: center;
 
-    *, ::placeholder {
-        color: white;
-    }
-
     form {
         display: flex;
         flex-direction: column;
@@ -23,6 +19,10 @@
 
         input {
             background-color: #7789cb;
+
+            &::placeholder {
+                color: white;
+            }
         }
 
         button {
