@@ -7,6 +7,7 @@
     border-radius: 0 5px 5px 0;
     border-left: 0;
     font-size: 1em !important;
+    background-color: #7789cb;
 
     div {
         padding: 5px;
@@ -14,8 +15,13 @@
         overflow-y: auto;
     }
 
+    p {
+        overflow-wrap: break-word;
+    }
+
     input {
         padding-inline: 2px;
         margin: 2px;
+        color: black;
     }
 }

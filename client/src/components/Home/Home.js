@@ -58,7 +58,7 @@ function Home({setAppView, socket, setLobby})
         <div className='Home'>
             <h1>Home</h1>
             <form onSubmit={onSubmit}>
-                <input type='text' placeholder='Nickname' value={nickname} onChange={e => setNickname(e.target.value)} required />
+                <input type='text' placeholder='Nickname' value={nickname} onChange={e => setNickname(e.target.value)} maxLength={16} required />
                 <button disabled={buttonDisabled}>Join Lobby</button>
             </form>
         </div>

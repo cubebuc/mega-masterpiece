@@ -92,6 +92,7 @@ function App()
             {appView === 'home' && socket && <Home setAppView={setAppView} socket={socket} setLobby={setLobby} />}
             {appView === 'lobby' && lobby && <Lobby setAppView={setAppView} socket={socket} lobby={lobby} setLobby={setLobby} isAdmin={isAdmin} />}
             {appView === 'game' && <Game setAppView={setAppView} socket={socket} lobby={lobby} setLobby={setLobby} isAdmin={isAdmin} isOnTurn={isOnTurn} />}
+            <footer>Copyright, github, docs...</footer>
         </div>
     );
 }
