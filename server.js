@@ -258,6 +258,9 @@ io.on('connection', (socket) =>
         let lobby = getLobby();
         let player = lobby.players.find(p => p.id === socket.id);
         let messageRaw = message.raw.trim().toUpperCase().normalize();
+        if(messageRaw.length > 40)
+            messageRaw = messageRaw.substring(0, 40);
+
         let wordRaw = lobby.currentWord.trim().toUpperCase().normalize();
         if(player.guessed)
         {
@@ -312,6 +315,10 @@ io.on('connection', (socket) =>
             lobby = {id: socket.id.substring(0, 16), inGame: false, players: [], currentPlayer: -1, rounds: 5, currentRound: 0, time: '90', words: ['Kočka Pes', 'Žirafa Slon', 'Ptakopysk Lemur'], currentWord: '', playersGuessed: []};
             lobbies.push(lobby);
         }
+
+        let nickname = data.nickname;
+        if(nickname.length > 16)
+            nickname = nickname.substring(0, 16);
 
         let player = {id: socket.id, nickname: data.nickname, onTurn: false, ready: false, guessed: false, points: 0, pointsThisTurn: 0};
         lobby.players.push(player);
@@ -401,7 +408,6 @@ io.on('connection', (socket) =>
     function endTurn()
     {
         let lobby = getLobby();
-        clearTimeout(lobby.timeout);
 
         roomEmit('endTurn', lobby.currentWord);
 
