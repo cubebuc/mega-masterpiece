@@ -28,6 +28,8 @@ Full build<br>
 Documentation build ([JSDocs](https://jsdoc.app/) is required)<br>
 `npm run build:docs`
 
+[Documentation](https://mega-masterpiece.herokuapp.com/docs)
+
 ## Contributing
 Create a pull-request.<br>
 I will review it in my precious time :)
