@@ -35,4 +35,21 @@
             }
         }
     }
+
+    div {
+        width: 550px;
+        margin-top: 40px;
+        padding: 20px;
+        background-color: #7789cb;
+        border-radius: 5px;
+
+        ul {
+            margin: 30px;
+            margin-block: 10px;
+        }
+
+        li {
+            margin-top: 5px;
+        }
+    }
 }

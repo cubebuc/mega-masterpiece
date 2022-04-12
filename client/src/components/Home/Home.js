@@ -61,6 +61,15 @@ function Home({setAppView, socket, setLobby})
                 <input type='text' placeholder='Nickname' value={nickname} onChange={e => setNickname(e.target.value)} maxLength={16} required />
                 <button disabled={buttonDisabled}>Join Lobby</button>
             </form>
+            <div>
+                <h2>How to play</h2>
+                <ul>
+                    <li><p>Join a friend's lobby by using his URL or create a new one by simply entering a name and joining.</p></li>
+                    <li><p>As a lobby admin you can set the game options, others wait until you start the game.</p></li>
+                    <li><p>If you are drawing, try your best to express the word with your Picasso skills.</p></li>
+                    <li><p>If you are guessing, try to guess the word by typing in the chat.<br/>You can see the number of the letters shown by underscores above the drawing.</p></li>
+                </ul>
+            </div>
         </div>
     );
 }
