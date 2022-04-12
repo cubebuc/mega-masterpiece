@@ -242,7 +242,8 @@ io.on('connection', (socket) =>
     {
         if(isAdmin())
         {
-            io.to(data.socketId).emit('turnDataSent', {timeCounter: data.timeCounter, pictureData: data.pictureData});
+            let lobby = getLobby();
+            io.to(data.socketId).emit('turnDataSent', {timeCounter: data.timeCounter, word: lobby.currentWord.replace(/[^\s]/g, '_'), pictureData: data.pictureData});
         }
     }
 
@@ -294,7 +295,6 @@ io.on('connection', (socket) =>
         
         let similarity = stringSimilarity.compareTwoStrings(messageRaw, wordRaw);
 
-        console.log(similarity);
         if(similarity > .35)
         {
             roomEmit('playerNearGuess', message.raw)
