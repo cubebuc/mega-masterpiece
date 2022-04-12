@@ -14,23 +14,39 @@ Mainly [socket.io](https://socket.io/), but also [express.js](https://expressjs.
 Client is written with [React](https://reactjs.org/).
 ### Install dependecies
 Do this both in root folder and client folder (server-side, client-side)<br>
-`npm install`
+```
+npm install
+```
+
 ### Dev server
 Local server at localhost:5000<br>
-`npm run dev`
+```
+npm run dev
+```
+
 ### Server only
 Starts the local server without rebuilding the front-end<br>
-`npm run start:server`
+```
+npm run start:server
+```
+
 ### Client only
 Starts the front-end without server<br>
 (Kind of useless, unles you need just the home page for some reason)<br>
-`npm run start:client`
+```
+npm run start:client
+```
+
 ### Builds
 Full build<br>
-`npm run build:full`
+```
+npm run build:full
+```
 
 Documentation build ([JSDocs](https://jsdoc.app/) is required)<br>
-`npm run build:docs`
+```
+npm run build:docs
+```
 
 [Documentation](https://mega-masterpiece.herokuapp.com/docs)
 
