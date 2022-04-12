@@ -428,7 +428,7 @@ io.on('connection', (socket) =>
         let lobby = getLobby();
         roomEmit('endGame');
 
-        let leaderboardTime = 4000;
+        let leaderboardTime = 8000;
         lobby.timeout = setTimeout(() =>
         {
             lobby.inGame = false;
