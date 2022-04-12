@@ -92,7 +92,7 @@ function App()
             {appView === 'home' && socket && <Home setAppView={setAppView} socket={socket} setLobby={setLobby} />}
             {appView === 'lobby' && lobby && <Lobby setAppView={setAppView} socket={socket} lobby={lobby} setLobby={setLobby} isAdmin={isAdmin} />}
             {appView === 'game' && <Game setAppView={setAppView} socket={socket} lobby={lobby} setLobby={setLobby} isAdmin={isAdmin} isOnTurn={isOnTurn} />}
-            <footer>Copyright, github, docs...</footer>
+            <footer>© Daniel Martinek 2022 <a href='https://github.com/cubebuc/mega-masterpiece'>GitHub</a> <a href='/docs'>Documentation</a></footer>
         </div>
     );
 }

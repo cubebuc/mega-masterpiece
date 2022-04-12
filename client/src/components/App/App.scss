@@ -35,8 +35,15 @@ h1::before {
 }
 
 footer {
+    display: flex;
     width: 100%;
     position: fixed;
     bottom: 0;
+    padding: 4px;
+    justify-content: center;
     background-color: #7789cb;
+
+    * {
+        margin-inline: 10px;
+    }
 }
