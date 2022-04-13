@@ -107,6 +107,7 @@ function Game({setAppView, socket, lobby, setLobby, isAdmin, isOnTurn})
                 setTime(data.timeCounter - 1);
             timeCounter.current = data.timeCounter - 1;
             setWord(data.word);
+            setRound(data.round);
 
             let arrayT = new Uint8ClampedArray(data.pictureData[0]);
             let arrayB = new Uint8ClampedArray(data.pictureData[1]);

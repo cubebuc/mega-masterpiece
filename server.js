@@ -243,7 +243,7 @@ io.on('connection', (socket) =>
         if(isAdmin())
         {
             let lobby = getLobby();
-            io.to(data.socketId).emit('turnDataSent', {timeCounter: data.timeCounter, word: lobby.currentWord.replace(/[^\s]/g, '_'), pictureData: data.pictureData});
+            io.to(data.socketId).emit('turnDataSent', {timeCounter: data.timeCounter, word: lobby.currentWord.replace(/[^\s]/g, '_'), round: lobby.currentRound, pictureData: data.pictureData});
         }
     }
 
@@ -389,7 +389,7 @@ io.on('connection', (socket) =>
         io.to(player.id).emit('newPlayerOnTurn', [playerIndex, lobby.currentWord]);
         io.to(getLobbyRoom()).except(player.id).emit('newPlayerOnTurn', [playerIndex, lobby.currentWord.replace(/[^\s]/g, '_')]);
     
-        let preTurnTimeout = 4000;
+        let preTurnTimeout = 5000;
         lobby.timeout = setTimeout(() =>
         {
             roomEmit('startTurn');
@@ -411,7 +411,7 @@ io.on('connection', (socket) =>
 
         roomEmit('endTurn', lobby.currentWord);
 
-        let endTurnTimeout = 4000;
+        let endTurnTimeout = 6000;
         lobby.timeout = setTimeout(() => 
         {
             nextTurn();
