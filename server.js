@@ -408,6 +408,7 @@ io.on('connection', (socket) =>
     function endTurn()
     {
         let lobby = getLobby();
+        clearTimeout(lobby.timeout);
 
         roomEmit('endTurn', lobby.currentWord);
 
