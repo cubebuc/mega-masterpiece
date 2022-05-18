@@ -312,7 +312,7 @@ io.on('connection', (socket) =>
         let lobby = lobbies.find(l => l.id === data.lobbyId)
         if(!lobby)
         {
-            lobby = {id: socket.id.substring(0, 16), inGame: false, players: [], currentPlayer: -1, rounds: 5, currentRound: 0, time: '90', words: ['Kočka Pes', 'Žirafa Slon', 'Ptakopysk Lemur'], currentWord: '', playersGuessed: []};
+            lobby = {id: socket.id.substring(0, 16), inGame: false, players: [], currentPlayer: -1, rounds: 5, currentRound: 0, time: '90', words: ['Rukavice','Šnek','Měsíc','Žárovka','Kalendář','Zub','Jazyk','Voda'], currentWord: '', playersGuessed: []};
             lobbies.push(lobby);
         }
 
