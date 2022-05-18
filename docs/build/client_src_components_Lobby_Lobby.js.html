@@ -115,7 +115,7 @@ function Lobby({setAppView, socket, lobby, setLobby, isAdmin})
         socket.on('joinGame', joinGame);
 
         return () => socket.off('joinGame');
-    }, [socket, setAppView])
+    }, [socket, setAppView]);
 
     /**
      * Transmits to the server, that others can start joining the game.
@@ -132,14 +132,14 @@ function Lobby({setAppView, socket, lobby, setLobby, isAdmin})
 
     return (
         &lt;div className='Lobby'>
-            &lt;h1>Lobby&lt;/h1>
+            &lt;h1>Lobby&lt;/h1>  
             &lt;strong>{window.location.protocol}//{window.location.host}/?id={lobby.id}&lt;/strong>
             &lt;div className='options-players'>
                 &lt;LobbyOptions socket={socket} lobby={lobby} setLobby={setLobby} isAdmin={isAdmin} />
                 &lt;div className='players'>
                     &lt;label htmlFor='player-list'>Players&lt;/label>
                     &lt;div className='player-list'>
-                        {lobby.players.map((player, index) => &lt;p key={index}>{player.nickname}&lt;/p>)}
+                        {lobby.players.map((player, index) => &lt;p key={index}>{index + 1}. {player.nickname}&lt;/p>)}
                     &lt;/div>
                 &lt;/div>
             &lt;/div>

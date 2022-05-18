@@ -117,7 +117,8 @@ function Game({setAppView, socket, lobby, setLobby, isAdmin, isOnTurn})
 
     useEffect(() =>
     {
-        socket.emit('turnDataRequested', socket.id);
+        if(!isAdmin())
+            socket.emit('turnDataRequested', socket.id);
         
         setInterval(() => {
             if(timeCounter.current >= 0)
@@ -197,6 +198,8 @@ function Game({setAppView, socket, lobby, setLobby, isAdmin, isOnTurn})
             if(data.timeCounter !== -1)
                 setTime(data.timeCounter - 1);
             timeCounter.current = data.timeCounter - 1;
+            setWord(data.word);
+            setRound(data.round);
 
             let arrayT = new Uint8ClampedArray(data.pictureData[0]);
             let arrayB = new Uint8ClampedArray(data.pictureData[1]);
@@ -258,10 +261,11 @@ function Game({setAppView, socket, lobby, setLobby, isAdmin, isOnTurn})
          */
         function endTurn(word)
         {
+            let sortedPlayers = lobby.players.slice().sort((p1, p2) => p2.pointsThisTurn - p1.pointsThisTurn);
             setOverlayContent(
                 &lt;div>
                     &lt;p>The word was &lt;b>{word}&lt;/b>&lt;/p>
-                    {lobby.players.map((player, index) => &lt;p key={index}>{player.nickname}: {player.pointsThisTurn}&lt;/p>)}
+                    {sortedPlayers.map((player, index) => &lt;p key={index}>{player.nickname}: {player.pointsThisTurn}&lt;/p>)}
                 &lt;/div>
             );
             setOverlayActive(' active');
@@ -273,12 +277,13 @@ function Game({setAppView, socket, lobby, setLobby, isAdmin, isOnTurn})
          */
         function endGame()
         {
+            let sortedPlayers = lobby.players.slice().sort((p1, p2) => p2.points - p1.points);
             setOverlayContent(
                 &lt;div className='leaderboard'>
                     &lt;b>Game ended&lt;/b>
-                    &lt;p className='first-place'>{lobby.players[0].nickname}: {lobby.players[0].points}&lt;/p>
-                    {lobby.players.length >= 2 &amp;&amp; &lt;p className='second-place'>{lobby.players[1].nickname}: {lobby.players[1].points}&lt;/p>}
-                    {lobby.players.length >= 3 &amp;&amp; &lt;p className='third-place'>{lobby.players[2].nickname}: {lobby.players[2].points}&lt;/p>}
+                    &lt;p className='first-place'>1. {sortedPlayers[0].nickname}: {sortedPlayers[0].points}&lt;/p>
+                    {lobby.players.length >= 2 &amp;&amp; &lt;p className='second-place'>2. {sortedPlayers[1].nickname}: {sortedPlayers[1].points}&lt;/p>}
+                    {lobby.players.length >= 3 &amp;&amp; &lt;p className='third-place'>3. {sortedPlayers[2].nickname}: {sortedPlayers[2].points}&lt;/p>}
                 &lt;/div>
             );
             setOverlayActive(' active');

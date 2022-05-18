@@ -334,7 +334,8 @@ io.on('connection', (socket) =>
     {
         if(isAdmin())
         {
-            io.to(data.socketId).emit('turnDataSent', {timeCounter: data.timeCounter, pictureData: data.pictureData});
+            let lobby = getLobby();
+            io.to(data.socketId).emit('turnDataSent', {timeCounter: data.timeCounter, word: lobby.currentWord.replace(/[^\s]/g, '_'), round: lobby.currentRound, pictureData: data.pictureData});
         }
     }
 
@@ -350,6 +351,9 @@ io.on('connection', (socket) =>
         let lobby = getLobby();
         let player = lobby.players.find(p => p.id === socket.id);
         let messageRaw = message.raw.trim().toUpperCase().normalize();
+        if(messageRaw.length > 40)
+            messageRaw = messageRaw.substring(0, 40);
+
         let wordRaw = lobby.currentWord.trim().toUpperCase().normalize();
         if(player.guessed)
         {
@@ -383,7 +387,6 @@ io.on('connection', (socket) =>
         
         let similarity = stringSimilarity.compareTwoStrings(messageRaw, wordRaw);
 
-        console.log(similarity);
         if(similarity > .35)
         {
             roomEmit('playerNearGuess', message.raw)
@@ -404,6 +407,10 @@ io.on('connection', (socket) =>
             lobby = {id: socket.id.substring(0, 16), inGame: false, players: [], currentPlayer: -1, rounds: 5, currentRound: 0, time: '90', words: ['Kočka Pes', 'Žirafa Slon', 'Ptakopysk Lemur'], currentWord: '', playersGuessed: []};
             lobbies.push(lobby);
         }
+
+        let nickname = data.nickname;
+        if(nickname.length > 16)
+            nickname = nickname.substring(0, 16);
 
         let player = {id: socket.id, nickname: data.nickname, onTurn: false, ready: false, guessed: false, points: 0, pointsThisTurn: 0};
         lobby.players.push(player);
@@ -474,7 +481,7 @@ io.on('connection', (socket) =>
         io.to(player.id).emit('newPlayerOnTurn', [playerIndex, lobby.currentWord]);
         io.to(getLobbyRoom()).except(player.id).emit('newPlayerOnTurn', [playerIndex, lobby.currentWord.replace(/[^\s]/g, '_')]);
     
-        let preTurnTimeout = 4000;
+        let preTurnTimeout = 5000;
         lobby.timeout = setTimeout(() =>
         {
             roomEmit('startTurn');
@@ -497,7 +504,7 @@ io.on('connection', (socket) =>
 
         roomEmit('endTurn', lobby.currentWord);
 
-        let endTurnTimeout = 4000;
+        let endTurnTimeout = 6000;
         lobby.timeout = setTimeout(() => 
         {
             nextTurn();
@@ -514,7 +521,7 @@ io.on('connection', (socket) =>
         let lobby = getLobby();
         roomEmit('endGame');
 
-        let leaderboardTime = 4000;
+        let leaderboardTime = 8000;
         lobby.timeout = setTimeout(() =>
         {
             lobby.inGame = false;

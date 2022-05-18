@@ -150,9 +150,18 @@ function Home({setAppView, socket, setLobby})
         &lt;div className='Home'>
             &lt;h1>Home&lt;/h1>
             &lt;form onSubmit={onSubmit}>
-                &lt;input type='text' placeholder='Nickname' value={nickname} onChange={e => setNickname(e.target.value)} required />
+                &lt;input type='text' placeholder='Nickname' value={nickname} onChange={e => setNickname(e.target.value)} maxLength={16} required />
                 &lt;button disabled={buttonDisabled}>Join Lobby&lt;/button>
             &lt;/form>
+            &lt;div>
+                &lt;h2>How to play&lt;/h2>
+                &lt;ul>
+                    &lt;li>&lt;p>Join a friend's lobby by using his URL or create a new one by simply entering a name and joining.&lt;/p>&lt;/li>
+                    &lt;li>&lt;p>As a lobby admin you can set the game options, others wait until you start the game.&lt;/p>&lt;/li>
+                    &lt;li>&lt;p>If you are drawing, try your best to express the word with your Picasso skills.&lt;/p>&lt;/li>
+                    &lt;li>&lt;p>If you are guessing, try to guess the word by typing in the chat.&lt;br/>You can see the number of the letters shown by underscores above the drawing.&lt;/p>&lt;/li>
+                &lt;/ul>
+            &lt;/div>
         &lt;/div>
     );
 }

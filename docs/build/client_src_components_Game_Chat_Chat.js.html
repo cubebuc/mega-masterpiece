@@ -180,7 +180,7 @@ function Chat({socket, lobby, setLobby})
             &lt;div className='messages' >
                 {messages.map((message, index) => &lt;p className='message' key={index}>{message.value}&lt;/p>)}
             &lt;/div>
-            &lt;input type='text' onKeyDown={onKeyDown}/>
+            &lt;input type='text' onKeyDown={onKeyDown} maxLength={40} />
         &lt;/div>
     );
 }
